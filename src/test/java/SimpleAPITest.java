@@ -39,7 +39,6 @@ public class SimpleAPITest {
                 }
                 """;
 
-        // Сохраняем ID питомца
         PET_ID = "1500000";
 
         var response = given().
