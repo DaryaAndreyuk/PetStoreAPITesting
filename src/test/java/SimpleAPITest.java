@@ -5,15 +5,9 @@ import org.testng.annotations.Test;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
-public class SimpleAPITest {
+public class SimpleAPITest extends BaseTest {
 
-    private static final String BASE_URL = "https://petstore.swagger.io/v2";
     private static String PET_ID;
-
-    @BeforeClass
-    public static void setup() {
-        RestAssured.baseURI = BASE_URL;
-    }
 
     @Test
     void createPetTest() {
