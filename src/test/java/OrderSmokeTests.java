@@ -1,108 +1,101 @@
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.testng.Assert.assertEquals;
 
 public class OrderSmokeTests extends BaseTest {
 
-    @Test(priority = 1)
+    private static final String ORDER_ENDPOINT = "/store/order";
+    private static int orderId;
+
+    @Test
     void createOrderTest() {
         String orderRequestBody = """
-            {
-              "id": 3,
-              "petId": 41025555,
-              "quantity": 1,
-              "shipDate": "2024-08-27T09:51:27.257Z",
-              "status": "placed",
-              "complete": true
-            }
-            """;
+                {
+                  "id": 3,
+                  "petId": 41025555,
+                  "quantity": 1,
+                  "shipDate": "2024-08-27T09:51:27.257Z",
+                  "status": "placed",
+                  "complete": true
+                }
+                """;
 
-        Response response = given().
-                header("Content-Type", "application/json").
-                body(orderRequestBody).
-                when().
-                post("/store/order").
-                then().
-                log().ifError().
-                statusCode(200).
-                extract().
-                response();
+        Response response = given()
+                .header("Content-Type", "application/json")
+                .body(orderRequestBody)
+                .when()
+                .post(ORDER_ENDPOINT)
+                .then()
+                .log().ifError()
+                .statusCode(200)
+                .extract()
+                .response();
 
-        System.out.println("Response Body: " + response.getBody().asString());
+        orderId = response.jsonPath().getInt("id");
+        System.out.println("Created Order ID: " + orderId);
 
-        // Verify response body content
-        response.then().
-                body("id", equalTo(3)).
-                body("petId", equalTo(41025555)).
-                body("quantity", equalTo(1)).
-                body("status", equalTo("placed")).
-                body("complete", equalTo(true));
+        verifyOrder(response, 3, 41025555, 1, "2024-08-27T09:51:27.257Z", "placed", true);
     }
 
-    @Test(priority = 1)
-    void getOrderByIdTest() {
-        int orderId = 3; // Change this ID as needed for different tests
+    @Test(dependsOnMethods = "createOrderTest")
+    public void getOrderTest() {
+        Response response = getOrder(orderId);
+        verifyOrder(response, orderId, 41025555, 1, "2024-08-27T09:51:27.257Z", "placed", true);
+    }
 
-        Response response = given().
-                pathParam("orderId", orderId).
-                when().
-                get("/store/order/{orderId}").
-                then().
-                log().ifError().
-                statusCode(200).
-                extract().
-                response();
+    @Test(dependsOnMethods = "getOrderTest")
+    public void deleteOrderByIdTest() {
+        deleteOrder(orderId);
 
-        System.out.println("Response Body: " + response.getBody().asString());
+        given()
+                .pathParam("orderId", orderId)
+                .when()
+                .get(ORDER_ENDPOINT + "/{orderId}")
+                .then()
+                .statusCode(404); // Expecting 404 as the order should be deleted
+    }
 
-        // Verify response body content
-        response.then().
-                body("id", equalTo(orderId)).
-                body("petId", equalTo(41025555)).
-                body("quantity", equalTo(1)).
-                body("status", equalTo("placed")).
-                body("complete", equalTo(true));
+    private Response getOrder(int orderId) {
+        return given()
+                .pathParam("orderId", orderId)
+                .when()
+                .get(ORDER_ENDPOINT + "/{orderId}")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
 
-        // Verify shipDate using date parsing
-        String expectedShipDate = "2024-08-27T09:51:27.257+0000";
+    private void deleteOrder(int orderId) {
+        given()
+                .pathParam("orderId", orderId)
+                .when()
+                .delete(ORDER_ENDPOINT + "/{orderId}")
+                .then()
+                .statusCode(200)
+                .body("message", equalTo(Integer.toString(orderId)));
+    }
+
+    private void verifyOrder(Response response, int id, int petId, int quantity, String expectedShipDate, String status, boolean complete) {
         String actualShipDate = response.jsonPath().getString("shipDate");
-        try {
-            ZonedDateTime expectedDate = ZonedDateTime.parse(expectedShipDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-            ZonedDateTime actualDate = ZonedDateTime.parse(actualShipDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-            if (!expectedDate.equals(actualDate)) {
-                throw new AssertionError("Expected shipDate: " + expectedDate + " but got: " + actualDate);
-            }
-        } catch (DateTimeParseException e) {
-            throw new AssertionError("Date parsing failed: " + e.getMessage());
-        }
-    }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        OffsetDateTime actualDateTime = OffsetDateTime.parse(actualShipDate, formatter);
+        String formattedActualDateTime = actualDateTime.withOffsetSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        assertEquals(expectedShipDate, formattedActualDateTime);
 
-    @Test() // Ensure that this test runs after the creation and retrieval tests
-    void deleteOrderByIdTest() {
-        int orderId = 3; // Change this ID as needed for different tests
-
-        Response response = given().
-                pathParam("orderId", orderId).
-                when().
-                delete("/store/order/{orderId}").
-                then().
-                log().ifError().
-                statusCode(200).
-                extract().
-                response();
-
-        System.out.println("Response Body: " + response.getBody().asString());
-
-        // Verify response body content
-        response.then().
-                body("code", equalTo(200)).
-                body("type", equalTo("unknown")).
-                body("message", equalTo(String.valueOf(orderId)));
+        response.then()
+                .body("id", equalTo(id))
+                .body("petId", equalTo(petId))
+                .body("quantity", equalTo(quantity))
+                .body("status", equalTo(status))
+                .body("complete", equalTo(complete));
     }
 }
