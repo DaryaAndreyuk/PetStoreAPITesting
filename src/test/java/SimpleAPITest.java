@@ -1,9 +1,8 @@
-import io.restassured.RestAssured;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
+import static utils.Constants.*;
 
 public class SimpleAPITest extends BaseTest {
 
@@ -36,15 +35,15 @@ public class SimpleAPITest extends BaseTest {
         PET_ID = "1500000";
 
         var response = given().
-                header("accept", "application/json").
-                header("Content-Type", "application/json").
+                header("accept", ACCEPT).
+                header("Content-Type", CONTENT_TYPE).
                 body(body).
                 when().
                 post(endpoint).
                 then();
 
         response.log().body();
-        response.statusCode(200);
+        response.statusCode(SUCCESS_STATUS_CODE);
     }
 
     @Test(dependsOnMethods = "createPetTest")
@@ -52,13 +51,13 @@ public class SimpleAPITest extends BaseTest {
         String endpoint = BASE_URL + "/pet/" + PET_ID;
 
         var response = given().
-                header("accept", "application/json").
+                header("accept", ACCEPT).
                 when().
                 get(endpoint).
                 then();
 
         response.log().body();
-        response.statusCode(200);
+        response.statusCode(SUCCESS_STATUS_CODE);
         response.body("id", equalTo(Integer.parseInt(PET_ID)));
         response.body("name", equalTo("cattie"));
     }

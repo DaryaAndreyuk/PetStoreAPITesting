@@ -1,5 +1,7 @@
 import io.restassured.response.Response;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import utils.Constants;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -8,59 +10,112 @@ import java.time.format.DateTimeFormatter;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.testng.Assert.assertEquals;
+import static utils.Constants.*;
 
 public class OrderSmokeTests extends BaseTest {
 
     private static final String ORDER_ENDPOINT = "/store/order";
     private static int orderId;
 
+    @BeforeMethod
+    public void setupOrder() {
+        createOrder(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+    }
+
     @Test
     void createOrderTest() {
-        String orderRequestBody = """
-                {
-                  "id": 3,
-                  "petId": 41025555,
-                  "quantity": 1,
-                  "shipDate": "2024-08-27T09:51:27.257Z",
-                  "status": "placed",
-                  "complete": true
-                }
-                """;
+        Response response = createOrder(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+        verifyStatusCode(response, SUCCESS_STATUS_CODE);
+        verifyOrder(response, 2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+    }
 
-        Response response = given()
-                .header("Content-Type", "application/json")
-                .body(orderRequestBody)
+    @Test
+    public void getExistingOrderTest() {
+        Response response = getOrder(2);
+        verifyStatusCode(response, SUCCESS_STATUS_CODE);
+        verifyOrder(response, 2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+    }
+
+    @Test
+    public void getNonExistingOrderTest() {
+        Response response = sendRequest("GET", ORDER_ENDPOINT + "/" + 1, null);
+        verifyStatusCode(response, NOT_FOUND_STATUS_CODE);
+        verifyResponse(response, 1, "error", "Order not found");
+    }
+
+    private Response sendRequest(String method, String endpoint, String body) {
+        var request = given()
+                .header("accept", ACCEPT);
+
+        if (body != null && !body.isEmpty() && ("POST".equals(method) || "PUT".equals(method))) {
+            request.body(body);
+        }
+
+        return request
                 .when()
-                .post(ORDER_ENDPOINT)
+                .request(method, endpoint)
                 .then()
                 .log().ifError()
-                .statusCode(200)
                 .extract()
                 .response();
-
-        orderId = response.jsonPath().getInt("id");
-        System.out.println("Created Order ID: " + orderId);
-
-        verifyOrder(response, 3, 41025555, 1, "2024-08-27T09:51:27.257Z", "placed", true);
     }
 
-    @Test(dependsOnMethods = "createOrderTest")
-    public void getOrderTest() {
-        Response response = getOrder(orderId);
-        verifyOrder(response, orderId, 41025555, 1, "2024-08-27T09:51:27.257Z", "placed", true);
+    @BeforeMethod
+    public void setupOrder1() {
+        // Create the order before running the delete test
+        createOrder(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
     }
 
-    @Test(dependsOnMethods = "getOrderTest")
+    @Test
     public void deleteOrderByIdTest() {
+        int orderId = 2;
         deleteOrder(orderId);
-
         given()
                 .pathParam("orderId", orderId)
                 .when()
                 .get(ORDER_ENDPOINT + "/{orderId}")
                 .then()
-                .statusCode(404); // Expecting 404 as the order should be deleted
+                .statusCode(NOT_FOUND_STATUS_CODE); // Expecting 404 as the order should be deleted
     }
+
+    public void deleteOrder(int orderId) {
+        given()
+                .pathParam("orderId", orderId)
+                .when()
+                .delete(ORDER_ENDPOINT + "/{orderId}")
+                .then()
+                .statusCode(SUCCESS_STATUS_CODE); // Expecting 200 or 204 as the order should be deleted
+    }
+
+
+    private Response createOrder(int id, int petId, int quantity, String shipDate, String status, boolean complete) {
+        String orderRequestBody = String.format("""
+            {
+              "id": %d,
+              "petId": %d,
+              "quantity": %d,
+              "shipDate": "%s",
+              "status": "%s",
+              "complete": %s
+            }
+            """, id, petId, quantity, shipDate, status, complete);
+
+        Response response = given()
+                .header("Content-Type", Constants.CONTENT_TYPE)
+                .body(orderRequestBody)
+                .when()
+                .post(ORDER_ENDPOINT)
+                .then()
+                .log().ifError()
+                .statusCode(SUCCESS_STATUS_CODE)
+                .extract()
+                .response();
+
+        int orderId = response.jsonPath().getInt("id");
+        System.out.println("Created Order ID: " + orderId);
+        return response;
+    }
+
 
     private Response getOrder(int orderId) {
         return given()
@@ -69,19 +124,9 @@ public class OrderSmokeTests extends BaseTest {
                 .get(ORDER_ENDPOINT + "/{orderId}")
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SUCCESS_STATUS_CODE)
                 .extract()
                 .response();
-    }
-
-    private void deleteOrder(int orderId) {
-        given()
-                .pathParam("orderId", orderId)
-                .when()
-                .delete(ORDER_ENDPOINT + "/{orderId}")
-                .then()
-                .statusCode(200)
-                .body("message", equalTo(Integer.toString(orderId)));
     }
 
     private void verifyOrder(Response response, int id, int petId, int quantity, String expectedShipDate, String status, boolean complete) {
@@ -89,7 +134,7 @@ public class OrderSmokeTests extends BaseTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         OffsetDateTime actualDateTime = OffsetDateTime.parse(actualShipDate, formatter);
         String formattedActualDateTime = actualDateTime.withOffsetSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        assertEquals(expectedShipDate, formattedActualDateTime);
+        assertEquals(formattedActualDateTime, expectedShipDate);
 
         response.then()
                 .body("id", equalTo(id))

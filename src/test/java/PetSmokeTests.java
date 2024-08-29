@@ -4,6 +4,7 @@ import org.testng.annotations.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import static utils.Constants.*;
 
 public class PetSmokeTests extends BaseTest {
 
@@ -33,21 +34,18 @@ public class PetSmokeTests extends BaseTest {
             """;
 
         Response response = createPet(requestBody);
-
         petId = response.jsonPath().getInt("id");
         System.out.println("Created Pet ID: " + petId);
-
         verifyPet(response, petId, "Rex", "http://example.com/rex.jpg", "available", 2);
     }
 
-    @Test(dependsOnMethods = "createPetTest")
+    @Test
     void getPetTest() {
         Response response = getPet(petId);
-
         verifyPet(response, petId, "Rex", "http://example.com/rex.jpg", "available", 2);
     }
 
-    @Test(dependsOnMethods = "getPetTest")
+    @Test
     void updatePetTest() {
         String updatedRequestBody = """
             {
@@ -75,29 +73,28 @@ public class PetSmokeTests extends BaseTest {
         verifyPet(response, petId, "Max", "http://example.com/max.jpg", "sold", 1);
     }
 
-    @Test(dependsOnMethods = "updatePetTest")
+    @Test
     void deletePetTest() {
         deletePet(petId);
 
-        // Verify the pet was deleted
         given().
                 pathParam("petId", petId).
                 when().
                 get("/pet/{petId}").
                 then().
-                statusCode(404).
+                statusCode(NOT_FOUND_STATUS_CODE).
                 body("message", equalTo("Pet not found"));
     }
 
     private Response createPet(String requestBody) {
         return given().
-                header("Content-Type", "application/json").
+                header("Content-Type", CONTENT_TYPE).
                 body(requestBody).
                 when().
                 post("/pet").
                 then().
                 log().ifError().
-                statusCode(200).
+                statusCode(SUCCESS_STATUS_CODE).
                 extract().
                 response();
     }
@@ -109,19 +106,19 @@ public class PetSmokeTests extends BaseTest {
                 get("/pet/{petId}").
                 then().
                 log().all().
-                statusCode(200).
+                statusCode(SUCCESS_STATUS_CODE).
                 extract().
                 response();
     }
 
     private Response updatePet(String requestBody) {
         return given().
-                header("Content-Type", "application/json").
+                header("Content-Type", CONTENT_TYPE).
                 body(requestBody).
                 when().
                 put("/pet").
                 then().
-                statusCode(200).
+                statusCode(SUCCESS_STATUS_CODE).
                 extract().
                 response();
     }
@@ -132,7 +129,7 @@ public class PetSmokeTests extends BaseTest {
                 when().
                 delete("/pet/{petId}").
                 then().
-                statusCode(200).
+                statusCode(SUCCESS_STATUS_CODE).
                 body("message", equalTo(Integer.toString(petId)));
     }
 
