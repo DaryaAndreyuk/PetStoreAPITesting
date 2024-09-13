@@ -60,12 +60,6 @@ public class OrderSmokeTests extends BaseTest {
                 .response();
     }
 
-    @BeforeMethod
-    public void setupOrder1() {
-        // Create the order before running the delete test
-        createOrder(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
-    }
-
     @Test
     public void deleteOrderByIdTest() {
         int orderId = 2;
@@ -78,7 +72,7 @@ public class OrderSmokeTests extends BaseTest {
                 .statusCode(NOT_FOUND_STATUS_CODE); // Expecting 404 as the order should be deleted
     }
 
-    public void deleteOrder(int orderId) {
+    private void deleteOrder(int orderId) {
         given()
                 .pathParam("orderId", orderId)
                 .when()
