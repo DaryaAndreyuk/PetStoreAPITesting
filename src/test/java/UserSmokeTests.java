@@ -1,4 +1,5 @@
 import io.restassured.response.Response;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
@@ -8,54 +9,78 @@ import static utils.Constants.*;
 public class UserSmokeTests extends BaseTest {
 
     private static final String USER_ENDPOINT = BASE_URL + "/user";
-    private static final String USERNAME = "user_1";
+    private static final String NON_EXIST_USERNAME_ENDPOINT = USER_ENDPOINT + "/non_existing_username";
+    private static final String NON_EXIST_USER_ENDPOINT  = USER_ENDPOINT + "/user_not_existed";
+
+    @BeforeMethod
+    public void setUp() {
+        if (!userExists(DEFAULT_USERNAME)) {
+            createUser(DEFAULT_USERNAME, DEFAULT_FIRST_NAME, DEFAULT_LAST_NAME, DEFAULT_EMAIL, DEFAULT_PASSWORD, DEFAULT_PHONE, DEFAULT_USER_STATUS);
+        }
+    }
 
     @Test
     public void createUserTest() {
-        String requestBody = createUserJson(2, USERNAME, "firstName1", "lastName1", "email1@gmail.com", "qwerty", "12345678", 0);
-        Response response = sendRequest("POST", USER_ENDPOINT, requestBody);
-        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, "2");
+        String requestBody = createUserJson(
+                DEFAULT_USER_ID,
+                DEFAULT_USERNAME,
+                DEFAULT_FIRST_NAME,
+                DEFAULT_LAST_NAME,
+                DEFAULT_EMAIL,
+                DEFAULT_PASSWORD,
+                DEFAULT_PHONE,
+                DEFAULT_USER_STATUS
+        );
+        Response response = sendRequest(POST_METHOD, USER_ENDPOINT, requestBody);
+        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, Integer.toString(DEFAULT_USER_ID));
     }
 
     @Test
     public void getExistingUserTest() {
-        Response response = sendRequest("GET", USER_ENDPOINT + "/" + USERNAME, null);
+        Response response = sendRequest(GET_METHOD, USER_ENDPOINT + "/" + DEFAULT_USERNAME, null);
         verifyStatusCode(response, SUCCESS_STATUS_CODE);
-        verifyUser(response, 2, USERNAME, "firstName1", "lastName1", "email1@gmail.com", "qwerty", "12345678", 0);
+        verifyUser(response,
+                DEFAULT_USER_ID,
+                DEFAULT_USERNAME,
+                DEFAULT_FIRST_NAME,
+                DEFAULT_LAST_NAME,
+                DEFAULT_EMAIL,
+                DEFAULT_PASSWORD,
+                DEFAULT_PHONE,
+                DEFAULT_USER_STATUS);
     }
 
     @Test
     public void getNonExistingUserTest() {
-        Response response = sendRequest("GET", USER_ENDPOINT + "/user_not_existed", null);
-        verifyResponse(response, 1, "error", "User not found");
+        Response response = sendRequest(GET_METHOD, NON_EXIST_USER_ENDPOINT, null);
+        verifyResponse(response, 1, ERROR_TYPE, USER_NOT_FOUND);
     }
 
     @Test
     public void updateUserTest() {
-        String updatedUsername = "updated_user_1";
-        String requestBody = createUserJson(2, updatedUsername, "updated_firstName1", "updated_lastName1", "updated_email1@gmail.com", "updated_qwerty", "12345678", 0);
-        Response response = sendRequest("PUT", USER_ENDPOINT + "/" + USERNAME, requestBody);
+        String requestBody = createUserJson(DEFAULT_USER_ID, UPDATED_USERNAME, UPDATED_FIRST_NAME, UPDATED_LASTNAME, UPDATED_EMAIL, UPDATED_PASSWORD, UPDATED_PHONE, DEFAULT_USER_STATUS);
+        Response response = sendRequest(PUT_METHOD, USER_ENDPOINT + "/" + DEFAULT_USERNAME, requestBody);
         verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, "2");
     }
 
     @Test
     public void deleteExistingUserTest() {
-        Response response = sendRequest("DELETE", USER_ENDPOINT + "/" + USERNAME, null);
-        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, USERNAME);
+        Response response = sendRequest(DELETE_METHOD, USER_ENDPOINT + "/" + DEFAULT_USERNAME, null);
+        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, DEFAULT_USERNAME);
     }
 
     @Test
     public void deleteNonExistingUserTest() {
-        Response response = sendRequest("DELETE", USER_ENDPOINT + "/non_existing_username", null);
+        Response response = sendRequest(DELETE_METHOD, NON_EXIST_USERNAME_ENDPOINT, null);
         verifyStatusCode(response, NOT_FOUND_STATUS_CODE);
     }
 
     private Response sendRequest(String method, String endpoint, String body) {
         var request = given()
-                .header("accept", ACCEPT)
-                .header("Content-Type", CONTENT_TYPE);
+                .header(ACCEPT_HEADER, ACCEPT)
+                .header(CONTENT_TYPE_HEADER, CONTENT_TYPE);
 
-        if (body != null && !body.isEmpty() && ("POST".equals(method) || "PUT".equals(method))) {
+        if (body != null && !body.isEmpty() && (POST_METHOD.equals(method) || PUT_METHOD.equals(method))) {
             request.body(body);
         }
 
@@ -93,5 +118,15 @@ public class UserSmokeTests extends BaseTest {
                 .body("password", equalTo(password))
                 .body("phone", equalTo(phone))
                 .body("userStatus", equalTo(userStatus));
+    }
+
+    private boolean userExists(String username) {
+        Response response = sendRequest(GET_METHOD, USER_ENDPOINT + "/" + username, null);
+        return response.getStatusCode() == SUCCESS_STATUS_CODE;
+    }
+
+    private void createUser(String username, String firstName, String lastName, String email, String password, String phone, int userStatus) {
+        String requestBody = createUserJson(DEFAULT_USER_ID, username, firstName, lastName, email, password, phone, userStatus);
+        sendRequest(POST_METHOD, USER_ENDPOINT, requestBody);
     }
 }
