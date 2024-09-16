@@ -35,8 +35,8 @@ public class SimpleAPITest extends BaseTest {
         PET_ID = "1500000";
 
         var response = given().
-                header("accept", ACCEPT).
-                header("Content-Type", CONTENT_TYPE).
+                header("accept", APP_JSON_TYPE).
+                header("Content-Type", APP_JSON_TYPE).
                 body(body).
                 when().
                 post(endpoint).
@@ -51,7 +51,7 @@ public class SimpleAPITest extends BaseTest {
         String endpoint = BASE_URL + "/pet/" + PET_ID;
 
         var response = given().
-                header("accept", ACCEPT).
+                header("accept", APP_JSON_TYPE).
                 when().
                 get(endpoint).
                 then();

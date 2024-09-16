@@ -1,7 +1,6 @@
 import io.restassured.response.Response;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static utils.Constants.*;
@@ -14,9 +13,8 @@ public class UserSmokeTests extends BaseTest {
 
     @BeforeMethod
     public void setUp() {
-        if (!userExists(DEFAULT_USERNAME)) {
+        if (!userExists(DEFAULT_USERNAME))
             createUser(DEFAULT_USERNAME, DEFAULT_FIRST_NAME, DEFAULT_LAST_NAME, DEFAULT_EMAIL, DEFAULT_PASSWORD, DEFAULT_PHONE, DEFAULT_USER_STATUS);
-        }
     }
 
     @Test
@@ -53,7 +51,7 @@ public class UserSmokeTests extends BaseTest {
     @Test
     public void getNonExistingUserTest() {
         Response response = sendRequest(GET_METHOD, NON_EXIST_USER_ENDPOINT, null);
-        verifyResponse(response, 1, ERROR_TYPE, USER_NOT_FOUND);
+        verifyResponse(response, 1, ERROR_TYPE, USER_NOT_FOUND_MESSAGE);
     }
 
     @Test
@@ -77,8 +75,8 @@ public class UserSmokeTests extends BaseTest {
 
     private Response sendRequest(String method, String endpoint, String body) {
         var request = given()
-                .header(ACCEPT_HEADER, ACCEPT)
-                .header(CONTENT_TYPE_HEADER, CONTENT_TYPE);
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE);
 
         if (body != null && !body.isEmpty() && (POST_METHOD.equals(method) || PUT_METHOD.equals(method))) {
             request.body(body);
@@ -92,32 +90,41 @@ public class UserSmokeTests extends BaseTest {
                 .extract()
                 .response();
     }
-
     private String createUserJson(int id, String username, String firstName, String lastName, String email, String password, String phone, int userStatus) {
-        return """
-                {
-                  "id": %d,
-                  "username": "%s",
-                  "firstName": "%s",
-                  "lastName": "%s",
-                  "email": "%s",
-                  "password": "%s",
-                  "phone": "%s",
-                  "userStatus": %d
-                }
-                """.formatted(id, username, firstName, lastName, email, password, phone, userStatus);
+        return String.format("""
+        {
+          "%s": %d,
+          "%s": "%s",
+          "%s": "%s",
+          "%s": "%s",
+          "%s": "%s",
+          "%s": "%s",
+          "%s": "%s",
+          "%s": %d
+        }
+        """,
+                ID_FIELD, id,
+                USERNAME_FIELD, username,
+                FIRST_NAME_FIELD, firstName,
+                LAST_NAME_FIELD, lastName,
+                EMAIL_FIELD, email,
+                PASSWORD_FIELD, password,
+                PHONE_FIELD, phone,
+                USER_STATUS_FIELD, userStatus
+        );
     }
+
 
     private void verifyUser(Response response, int userId, String username, String firstName, String lastName, String email, String password, String phone, int userStatus) {
         response.then()
-                .body("id", equalTo(userId))
-                .body("username", equalTo(username))
-                .body("firstName", equalTo(firstName))
-                .body("lastName", equalTo(lastName))
-                .body("email", equalTo(email))
-                .body("password", equalTo(password))
-                .body("phone", equalTo(phone))
-                .body("userStatus", equalTo(userStatus));
+                .body(ID_FIELD, equalTo(userId))
+                .body(USERNAME_FIELD, equalTo(username))
+                .body(FIRST_NAME_FIELD, equalTo(firstName))
+                .body(LAST_NAME_FIELD, equalTo(lastName))
+                .body(EMAIL_FIELD, equalTo(email))
+                .body(PASSWORD_FIELD, equalTo(password))
+                .body(PHONE_FIELD, equalTo(phone))
+                .body(USER_STATUS_FIELD, equalTo(userStatus));
     }
 
     private boolean userExists(String username) {

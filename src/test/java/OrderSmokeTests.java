@@ -1,12 +1,9 @@
 import io.restassured.response.Response;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import utils.Constants;
-
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.testng.Assert.assertEquals;
@@ -14,40 +11,98 @@ import static utils.Constants.*;
 
 public class OrderSmokeTests extends BaseTest {
 
-    private static final String ORDER_ENDPOINT = "/store/order";
-    private static int orderId;
+    private static final String ORDER_ENDPOINT = BASE_URL + "/store/order";
 
     @BeforeMethod
-    public void setupOrder() {
-        createOrder(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+    public void setUp() {
+        if (!orderExists(TEST_ORDER_ID)) {
+            createOrder(TEST_ORDER_ID, PET_ID, QUANTITY, SHIP_DATE, PLACED_STATUS, COMPLETE);
+        }
     }
 
     @Test
-    void createOrderTest() {
-        Response response = createOrder(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+    public void createOrderTest() {
+        Response response = createOrder(TEST_ORDER_ID, PET_ID, QUANTITY, SHIP_DATE, PLACED_STATUS, COMPLETE);
         verifyStatusCode(response, SUCCESS_STATUS_CODE);
-        verifyOrder(response, 2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+        verifyOrder(response, TEST_ORDER_ID, PET_ID, QUANTITY, SHIP_DATE, PLACED_STATUS, COMPLETE);
     }
 
     @Test
     public void getExistingOrderTest() {
-        Response response = getOrder(2);
+        Response response = getOrder(TEST_ORDER_ID);
         verifyStatusCode(response, SUCCESS_STATUS_CODE);
-        verifyOrder(response, 2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+        verifyOrder(response, TEST_ORDER_ID, PET_ID, QUANTITY, SHIP_DATE, PLACED_STATUS, COMPLETE);
     }
 
     @Test
     public void getNonExistingOrderTest() {
-        Response response = sendRequest("GET", ORDER_ENDPOINT + "/" + 1, null);
+        Response response = sendRequest(GET_METHOD, ORDER_ENDPOINT + "/" + NON_EXIST_ID, null);
         verifyStatusCode(response, NOT_FOUND_STATUS_CODE);
-        verifyResponse(response, 1, "error", "Order not found");
+        verifyResponse(response, 1, ERROR_TYPE, ORDER_NOT_FOUND_MESSAGE);
+    }
+
+    @Test
+    public void deleteOrderByIdTest() {
+        int orderId = TEST_ORDER_ID;
+        deleteOrder(orderId);
+        Response response = given()
+                .pathParam(ORDER_ID_PARAMETER, orderId)
+                .when()
+                .get(ORDER_ENDPOINT + "/{orderId}");
+        verifyStatusCode(response, NOT_FOUND_STATUS_CODE); // Expecting 404 as the order should be deleted
+    }
+
+    private boolean orderExists(int orderId) {
+        Response response = getOrder(orderId);
+        return response.getStatusCode() == SUCCESS_STATUS_CODE;
+    }
+
+    private Response createOrder(int id, int petId, int quantity, String shipDate, String status, boolean complete) {
+        String orderRequestBody = String.format("""
+        {
+          "%s": %d,
+          "%s": %d,
+          "%s": %d,
+          "%s": "%s",
+          "%s": "%s",
+          "%s": %b
+        }
+        """,
+                ID_FIELD, id,
+                PET_ID_FIELD, petId,
+                QUANTITY_FIELD, quantity,
+                SHIP_DATE_FIELD, shipDate,
+                STATUS_FIELD, status,
+                COMPLETE_FIELD, complete
+        );
+
+        return sendRequest(POST_METHOD, ORDER_ENDPOINT, orderRequestBody);
+    }
+
+
+    private Response getOrder(int orderId) {
+        return given()
+                .pathParam(ORDER_ID_PARAMETER, orderId)
+                .when()
+                .get(ORDER_ENDPOINT + "/{orderId}")
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+
+    private void deleteOrder(int orderId) {
+        sendRequest(DELETE_METHOD, ORDER_ENDPOINT + "/" + orderId, null)
+                .then()
+                .statusCode(SUCCESS_STATUS_CODE);
     }
 
     private Response sendRequest(String method, String endpoint, String body) {
         var request = given()
-                .header("accept", ACCEPT);
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE);
 
-        if (body != null && !body.isEmpty() && ("POST".equals(method) || "PUT".equals(method))) {
+        if (body != null && !body.isEmpty() && (POST_METHOD.equals(method) || PUT_METHOD.equals(method))) {
             request.body(body);
         }
 
@@ -60,81 +115,25 @@ public class OrderSmokeTests extends BaseTest {
                 .response();
     }
 
-    @Test
-    public void deleteOrderByIdTest() {
-        int orderId = 2;
-        deleteOrder(orderId);
-        given()
-                .pathParam("orderId", orderId)
-                .when()
-                .get(ORDER_ENDPOINT + "/{orderId}")
-                .then()
-                .statusCode(NOT_FOUND_STATUS_CODE); // Expecting 404 as the order should be deleted
-    }
-
-    private void deleteOrder(int orderId) {
-        given()
-                .pathParam("orderId", orderId)
-                .when()
-                .delete(ORDER_ENDPOINT + "/{orderId}")
-                .then()
-                .statusCode(SUCCESS_STATUS_CODE); // Expecting 200 or 204 as the order should be deleted
-    }
-
-
-    private Response createOrder(int id, int petId, int quantity, String shipDate, String status, boolean complete) {
-        String orderRequestBody = String.format("""
-            {
-              "id": %d,
-              "petId": %d,
-              "quantity": %d,
-              "shipDate": "%s",
-              "status": "%s",
-              "complete": %s
-            }
-            """, id, petId, quantity, shipDate, status, complete);
-
-        Response response = given()
-                .header("Content-Type", Constants.CONTENT_TYPE)
-                .body(orderRequestBody)
-                .when()
-                .post(ORDER_ENDPOINT)
-                .then()
-                .log().ifError()
-                .statusCode(SUCCESS_STATUS_CODE)
-                .extract()
-                .response();
-
-        int orderId = response.jsonPath().getInt("id");
-        System.out.println("Created Order ID: " + orderId);
-        return response;
-    }
-
-
-    private Response getOrder(int orderId) {
-        return given()
-                .pathParam("orderId", orderId)
-                .when()
-                .get(ORDER_ENDPOINT + "/{orderId}")
-                .then()
-                .log().all()
-                .statusCode(SUCCESS_STATUS_CODE)
-                .extract()
-                .response();
-    }
-
     private void verifyOrder(Response response, int id, int petId, int quantity, String expectedShipDate, String status, boolean complete) {
-        String actualShipDate = response.jsonPath().getString("shipDate");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        verifyOrderDate(response, expectedShipDate);
+        verifyOrderDetails(response, id, petId, quantity, status, complete);
+    }
+
+    private void verifyOrderDate(Response response, String expectedShipDate) {
+        String actualShipDate = response.jsonPath().getString(SHIP_DATE_FIELD);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         OffsetDateTime actualDateTime = OffsetDateTime.parse(actualShipDate, formatter);
         String formattedActualDateTime = actualDateTime.withOffsetSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        assertEquals(formattedActualDateTime, expectedShipDate);
+        assertEquals(formattedActualDateTime, expectedShipDate, SHIP_DATE_DOES_NOT_MATCH_THE_EXPECTED_VALUE);
+    }
 
+    private void verifyOrderDetails(Response response, int id, int petId, int quantity, String status, boolean complete) {
         response.then()
-                .body("id", equalTo(id))
-                .body("petId", equalTo(petId))
-                .body("quantity", equalTo(quantity))
-                .body("status", equalTo(status))
-                .body("complete", equalTo(complete));
+                .body(ID_FIELD, equalTo(id))
+                .body(PET_ID_FIELD, equalTo(petId))
+                .body(QUANTITY_FIELD, equalTo(quantity))
+                .body(STATUS_FIELD, equalTo(status))
+                .body(COMPLETE_FIELD, equalTo(complete));
     }
 }
