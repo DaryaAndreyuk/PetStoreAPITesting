@@ -35,6 +35,7 @@ public class UserSmokeTests extends BaseTest {
 
     @Test
     public void getExistingUserTest() {
+    
         Response response = sendRequest(GET_METHOD, USER_ENDPOINT + "/" + DEFAULT_USERNAME, null);
         verifyStatusCode(response, SUCCESS_STATUS_CODE);
         verifyUser(response,
