@@ -1,5 +1,11 @@
 package utils;
 
+import models.Category;
+import models.Pet;
+import models.Tag;
+
+import java.util.List;
+
 public final class Constants {
     public static final int SUCCESS_STATUS_CODE = 200;
     public static final int NOT_FOUND_STATUS_CODE = 404;
@@ -61,6 +67,9 @@ public final class Constants {
     public static final String AVAILABLE_STATUS = "available";
     public static final String UPDATED_PET_STATUS = "sold";
     public static final String PET_NOT_FOUND_MESSAGE = "Pet not found";
+
+    public static final Category DEFAULT_CATEGORY = new Category(2, "Dogs");
+    public static final Pet DEFAULT_PET = new Pet(3, DEFAULT_CATEGORY,"Rex", List.of("http://example.com/rex.jpg"), List.of(new Tag(1, "Good dogs")), "available");
 
     public static final String PET_CATEGORY_ID_FIELD = "category.id";
     public static final String PET_CATEGORY_NAME_FIELD = "category.name";

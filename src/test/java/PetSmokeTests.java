@@ -1,7 +1,16 @@
+import controller.PetController;
+import io.restassured.http.Method;
 import io.restassured.response.Response;
+import models.Pet;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.asserts.Assertion;
+
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
 import static utils.Constants.*;
 
@@ -10,11 +19,42 @@ public class PetSmokeTests extends BaseTest {
     private static final String PET_ENDPOINT = BASE_URL + "/pet";
     private static final String NON_EXIST_PET_ENDPOINT = PET_ENDPOINT + "/" + NON_EXIST_ID;
 
+    PetController petController = new PetController();
+
     @BeforeMethod
     public void setUp() {
         if (!petExists(TEST_PET_ID)) {
             createPet(TEST_PET_ID, PET_NAME, PET_PHOTO_URL, AVAILABLE_STATUS, PET_CATEGORY_ID);
         }
+    }
+
+    @Test
+    public void createPetTestGena() {
+        Response response = petController.addDefaultPet();
+        response.prettyPrint();
+        Assert.assertEquals(response.statusCode(), 200);
+    }
+
+    @Test
+    public void getExistingPetTestGena() {
+        Response addResponse = petController.addDefaultPet();
+        Pet addedPet = addResponse.as(Pet.class);
+
+        Response getResponse = petController.findPet(addedPet.getId());
+        Pet getPet = getResponse.as(Pet.class);
+        getResponse.prettyPrint();
+        Assert.assertEquals(getResponse.statusCode(), 200);
+        Assert.assertEquals(addedPet, getPet);
+
+        Assertions.assertThat(addedPet)
+                .usingRecursiveComparison().
+                ignoringFields("date")
+                .as("Two object not equals, expected %s, but was %s", DEFAULT_PET, getPet)
+                .isEqualTo(getPet);
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(addedPet.getId()).isEqualTo(getPet.getId());
+        softAssertions.assertThat(addedPet.getStatus()).isEqualTo(getPet.getStatus());
+        softAssertions.assertAll();
     }
 
     @Test
