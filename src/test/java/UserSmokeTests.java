@@ -1,6 +1,10 @@
 import controller.OrderController;
 import controller.UserController;
 import io.restassured.response.Response;
+import models.Pet;
+import models.User;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -14,12 +18,6 @@ public class UserSmokeTests extends BaseTest {
     private static final String NON_EXIST_USERNAME_ENDPOINT = USER_ENDPOINT + "/non_existing_username";
     private static final String NON_EXIST_USER_ENDPOINT  = USER_ENDPOINT + "/user_not_existed";
     UserController userController = new UserController();
-
-    @BeforeMethod
-    public void setUp() {
-        if (!userExists(DEFAULT_USERNAME))
-            createUser(DEFAULT_USERNAME, DEFAULT_FIRST_NAME, DEFAULT_LAST_NAME, DEFAULT_EMAIL, DEFAULT_PASSWORD, DEFAULT_PHONE, DEFAULT_USER_STATUS);
-    }
 
     @Test
     public void createUserAAATest() {
@@ -42,6 +40,30 @@ public class UserSmokeTests extends BaseTest {
         );
         Response response = sendRequest(POST_METHOD, USER_ENDPOINT, requestBody);
         verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, Integer.toString(DEFAULT_USER_ID));
+    }
+
+    @Test
+    public void getExistingUserAAATest() {
+        Response addResponse = userController.addDefaultUser();
+        // ???? addresponse returns not the Entity User, but code, message etc.
+       // addResponse.prettyPrint();
+       // User addedUser = addResponse.as(User.class);
+
+        Response getResponse = userController.findUser(DEFAULT_USER.getUsername());
+        User getUser = getResponse.as(User.class);
+        getResponse.prettyPrint();
+        Assert.assertEquals(getResponse.statusCode(), 200);
+        Assert.assertEquals(DEFAULT_USER, getUser);
+
+        Assertions.assertThat(DEFAULT_USER)
+                .usingRecursiveComparison().
+                ignoringFields("shipdate")
+                .as("Two objects are not equals. Expected: %s, but was: %s", DEFAULT_USER, getUser)
+                .isEqualTo(getUser);
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(DEFAULT_USER.getId()).isEqualTo(getUser.getId());
+        softAssertions.assertThat(DEFAULT_USER.getUserStatus()).isEqualTo(getUser.getUserStatus());
+        softAssertions.assertAll();
     }
 
     @Test

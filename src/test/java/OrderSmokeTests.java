@@ -1,7 +1,9 @@
 import controller.OrderController;
 import io.restassured.response.Response;
+import models.Order;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.OffsetDateTime;
@@ -18,18 +20,35 @@ public class OrderSmokeTests extends BaseTest {
     private static final String ORDER_ENDPOINT = BASE_URL + "/store/order";
     OrderController orderController = new OrderController();
 
-    @BeforeMethod
-    public void setUp() {
-        if (!orderExists(TEST_ORDER_ID)) {
-            createOrder(TEST_ORDER_ID, PET_ID, QUANTITY, SHIP_DATE, PLACED_STATUS, COMPLETE);
-        }
-    }
-
     @Test
     public void createOrderAAATest() {
         Response response = orderController.addDefaultOrder();
         response.prettyPrint();
         Assert.assertEquals(response.statusCode(), 200);
+    }
+
+    @Test
+    public void getExistingOrderAAATest() {
+        Response addResponse = orderController.addDefaultOrder();
+
+        addResponse.prettyPrint();
+        Order addedOrder = addResponse.as(Order.class);
+
+        Response getResponse = orderController.findOrder(addedOrder.getId());
+        Order getOrder = getResponse.as(Order.class);
+        getResponse.prettyPrint();
+        Assert.assertEquals(getResponse.statusCode(), 200);
+        Assert.assertEquals(addedOrder, getOrder);
+
+        Assertions.assertThat(addedOrder)
+                .usingRecursiveComparison().
+                ignoringFields("shipDate")
+                .as("Two objects are not equals. Expected: %s, but was: %s", addedOrder, getOrder)
+                .isEqualTo(getOrder);
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(addedOrder.getId()).isEqualTo(getOrder.getId());
+        softAssertions.assertThat(addedOrder.getStatus()).isEqualTo(getOrder.getStatus());
+        softAssertions.assertAll();
     }
 
     @Test
@@ -56,34 +75,6 @@ public class OrderSmokeTests extends BaseTest {
                 .get(ORDER_ENDPOINT + "/{orderId}");
         verifyStatusCode(response, NOT_FOUND_STATUS_CODE); // Expecting 404 as the order should be deleted
     }
-
-    private boolean orderExists(int orderId) {
-        Response response = getOrder(orderId);
-        return response.getStatusCode() == SUCCESS_STATUS_CODE;
-    }
-
-    private Response createOrder(int id, int petId, int quantity, String shipDate, String status, boolean complete) {
-        String orderRequestBody = String.format("""
-                        {
-                          "%s": %d,
-                          "%s": %d,
-                          "%s": %d,
-                          "%s": "%s",
-                          "%s": "%s",
-                          "%s": %b
-                        }
-                        """,
-                ID_FIELD, id,
-                PET_ID_FIELD, petId,
-                QUANTITY_FIELD, quantity,
-                SHIP_DATE_FIELD, shipDate,
-                STATUS_FIELD, status,
-                COMPLETE_FIELD, complete
-        );
-
-        return sendRequest(POST_METHOD, ORDER_ENDPOINT, orderRequestBody);
-    }
-
 
     private Response getOrder(int orderId) {
         return given()

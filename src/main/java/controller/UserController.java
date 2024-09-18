@@ -9,7 +9,6 @@ import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
 import static utils.Constants.*;
-import static utils.Constants.DEFAULT_PET;
 
 public class UserController {
     private static final String USER_ENDPOINT = BASE_URL + "/user";
@@ -38,5 +37,15 @@ public class UserController {
                 .response();
     }
 
-
+    public Response findUser(String username) {
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
+                .when()
+                .request(Method.GET, USER_ENDPOINT + "/" + username)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
 }
