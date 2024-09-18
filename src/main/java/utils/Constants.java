@@ -1,8 +1,6 @@
 package utils;
 
-import models.Category;
-import models.Pet;
-import models.Tag;
+import models.*;
 
 import java.util.List;
 
@@ -69,7 +67,14 @@ public final class Constants {
     public static final String PET_NOT_FOUND_MESSAGE = "Pet not found";
 
     public static final Category DEFAULT_CATEGORY = new Category(2, "Dogs");
-    public static final Pet DEFAULT_PET = new Pet(3, DEFAULT_CATEGORY,"Rex", List.of("http://example.com/rex.jpg"), List.of(new Tag(1, "Good dogs")), "available");
+
+    public static final Pet DEFAULT_PET = new Pet(3, DEFAULT_CATEGORY, "Rex",
+            List.of("http://example.com/rex.jpg"), List.of(new Tag(1, "Good dogs")),
+            "available");
+    public static final Order DEFAULT_ORDER = new Order(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
+
+    public static final User DEFAULT_USER = new User(2, "user_1",
+            "firstName1", "lastName1", "email1@gmail.com", "qwerty", "12345678", 0);
 
     public static final String PET_CATEGORY_ID_FIELD = "category.id";
     public static final String PET_CATEGORY_NAME_FIELD = "category.name";

@@ -1,5 +1,4 @@
 import controller.PetController;
-import io.restassured.http.Method;
 import io.restassured.response.Response;
 import models.Pet;
 import org.assertj.core.api.Assertions;
@@ -7,10 +6,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.asserts.Assertion;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
 import static utils.Constants.*;
 

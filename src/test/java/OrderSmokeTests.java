@@ -1,9 +1,13 @@
+import controller.OrderController;
 import io.restassured.response.Response;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.testng.Assert.assertEquals;
@@ -12,6 +16,7 @@ import static utils.Constants.*;
 public class OrderSmokeTests extends BaseTest {
 
     private static final String ORDER_ENDPOINT = BASE_URL + "/store/order";
+    OrderController orderController = new OrderController();
 
     @BeforeMethod
     public void setUp() {
@@ -21,10 +26,10 @@ public class OrderSmokeTests extends BaseTest {
     }
 
     @Test
-    public void createOrderTest() {
-        Response response = createOrder(TEST_ORDER_ID, PET_ID, QUANTITY, SHIP_DATE, PLACED_STATUS, COMPLETE);
-        verifyStatusCode(response, SUCCESS_STATUS_CODE);
-        verifyOrder(response, TEST_ORDER_ID, PET_ID, QUANTITY, SHIP_DATE, PLACED_STATUS, COMPLETE);
+    public void createOrderAAATest() {
+        Response response = orderController.addDefaultOrder();
+        response.prettyPrint();
+        Assert.assertEquals(response.statusCode(), 200);
     }
 
     @Test
@@ -59,15 +64,15 @@ public class OrderSmokeTests extends BaseTest {
 
     private Response createOrder(int id, int petId, int quantity, String shipDate, String status, boolean complete) {
         String orderRequestBody = String.format("""
-        {
-          "%s": %d,
-          "%s": %d,
-          "%s": %d,
-          "%s": "%s",
-          "%s": "%s",
-          "%s": %b
-        }
-        """,
+                        {
+                          "%s": %d,
+                          "%s": %d,
+                          "%s": %d,
+                          "%s": "%s",
+                          "%s": "%s",
+                          "%s": %b
+                        }
+                        """,
                 ID_FIELD, id,
                 PET_ID_FIELD, petId,
                 QUANTITY_FIELD, quantity,

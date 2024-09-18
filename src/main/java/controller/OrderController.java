@@ -8,46 +8,33 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
-import static utils.Constants.ACCEPT_HEADER;
+import static utils.Constants.*;
 import static utils.Constants.APP_JSON_TYPE;
-import static utils.Constants.BASE_URL;
-import static utils.Constants.CONTENT_TYPE_HEADER;
-import static utils.Constants.DEFAULT_PET;
 
-public class PetController {
-    private static final String PET_ENDPOINT = BASE_URL + "/pet";
+public class OrderController {
+
+    private static final String ORDER_ENDPOINT = BASE_URL + "/store/order";
 
     RequestSpecification requestSpecification = given();
 
-    public PetController() {
+    public OrderController() {
         RestAssured.defaultParser = Parser.JSON;
         this.requestSpecification.accept(ContentType.JSON);
         this.requestSpecification.contentType(ContentType.JSON);
-        this.requestSpecification.baseUri(PET_ENDPOINT);
+        this.requestSpecification.baseUri(ORDER_ENDPOINT);
     }
 
-    public Response addDefaultPet() {
+    public Response addDefaultOrder() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
                 .when()
-                .body(DEFAULT_PET)
-                .request(Method.POST, PET_ENDPOINT)
+                .body(DEFAULT_ORDER)
+                .request(Method.POST, ORDER_ENDPOINT)
                 .then()
                 .log().ifError()
                 .extract()
                 .response();
     }
 
-    public Response findPet(int id) {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
-                .when()
-                .request(Method.GET, PET_ENDPOINT + "/" + id)
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
-    }
 }

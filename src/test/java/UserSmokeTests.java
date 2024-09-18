@@ -1,4 +1,7 @@
+import controller.OrderController;
+import controller.UserController;
 import io.restassured.response.Response;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import static io.restassured.RestAssured.given;
@@ -10,11 +13,19 @@ public class UserSmokeTests extends BaseTest {
     private static final String USER_ENDPOINT = BASE_URL + "/user";
     private static final String NON_EXIST_USERNAME_ENDPOINT = USER_ENDPOINT + "/non_existing_username";
     private static final String NON_EXIST_USER_ENDPOINT  = USER_ENDPOINT + "/user_not_existed";
+    UserController userController = new UserController();
 
     @BeforeMethod
     public void setUp() {
         if (!userExists(DEFAULT_USERNAME))
             createUser(DEFAULT_USERNAME, DEFAULT_FIRST_NAME, DEFAULT_LAST_NAME, DEFAULT_EMAIL, DEFAULT_PASSWORD, DEFAULT_PHONE, DEFAULT_USER_STATUS);
+    }
+
+    @Test
+    public void createUserAAATest() {
+        Response response = userController.addDefaultUser();
+        response.prettyPrint();
+        Assert.assertEquals(response.statusCode(), 200);
     }
 
     @Test

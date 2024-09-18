@@ -8,46 +8,35 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
-import static utils.Constants.ACCEPT_HEADER;
-import static utils.Constants.APP_JSON_TYPE;
-import static utils.Constants.BASE_URL;
-import static utils.Constants.CONTENT_TYPE_HEADER;
+import static utils.Constants.*;
 import static utils.Constants.DEFAULT_PET;
 
-public class PetController {
-    private static final String PET_ENDPOINT = BASE_URL + "/pet";
+public class UserController {
+    private static final String USER_ENDPOINT = BASE_URL + "/user";
+    private static final String NON_EXIST_USERNAME_ENDPOINT = USER_ENDPOINT + "/non_existing_username";
+    private static final String NON_EXIST_USER_ENDPOINT  = USER_ENDPOINT + "/user_not_existed";
 
     RequestSpecification requestSpecification = given();
 
-    public PetController() {
+    public UserController() {
         RestAssured.defaultParser = Parser.JSON;
         this.requestSpecification.accept(ContentType.JSON);
         this.requestSpecification.contentType(ContentType.JSON);
-        this.requestSpecification.baseUri(PET_ENDPOINT);
+        this.requestSpecification.baseUri(USER_ENDPOINT);
     }
 
-    public Response addDefaultPet() {
+    public Response addDefaultUser() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
                 .when()
-                .body(DEFAULT_PET)
-                .request(Method.POST, PET_ENDPOINT)
+                .body(DEFAULT_USER)
+                .request(Method.POST, USER_ENDPOINT)
                 .then()
                 .log().ifError()
                 .extract()
                 .response();
     }
 
-    public Response findPet(int id) {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
-                .when()
-                .request(Method.GET, PET_ENDPOINT + "/" + id)
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
-    }
+
 }
