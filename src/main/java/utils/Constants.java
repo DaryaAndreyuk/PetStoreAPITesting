@@ -1,7 +1,5 @@
 package utils;
-
 import models.*;
-
 import java.util.List;
 
 public final class Constants {
@@ -15,7 +13,6 @@ public final class Constants {
     public static final String CONTENT_TYPE_HEADER = "Content-Type";
     public static final String ACCEPT_HEADER = "Accept";
     public static final String UNKNOWN_TYPE = "unknown";
-    public static final String PLACED_STATUS = "placed";
     public static final String GET_METHOD = "GET";
     public static final String POST_METHOD = "POST";
     public static final String PUT_METHOD = "PUT";
@@ -29,11 +26,7 @@ public final class Constants {
     public static final String DEFAULT_PASSWORD = "qwerty";
     public static final String DEFAULT_PHONE = "12345678";
 
-    public static final String PET_ID_FIELD = "petId";
-    public static final String QUANTITY_FIELD = "quantity";
-    public static final String SHIP_DATE_FIELD = "shipDate";
     public static final String STATUS_FIELD = "status";
-    public static final String COMPLETE_FIELD = "complete";
     public static final String CODE_FIELD = "code";
     public static final String MESSAGE_FIELD = "message";
 
@@ -54,7 +47,6 @@ public final class Constants {
     public static final String UPDATED_PHONE = "87654321";
     public static final String USER_NOT_FOUND_MESSAGE = "User not found";
 
-    public static final int PET_ID = 3;
     public static final int TEST_PET_ID = 41025555;
     public static final int PET_CATEGORY_ID = 2;
     public static final int UPDATED_PET_CATEGORY_ID = 1;
@@ -84,17 +76,11 @@ public final class Constants {
     public static final String PET_TAG_NAME_FIELD = "tags[0].name";
 
     public static final String NON_EXIST_ID = "99999999";
+    public static final int NON_EXIST_ID_INT = 99999999;
+
     public static final String DOGS_CATEGORY_NAME = "Dogs";
     public static final int FRIENDLY_TAG_ID = 1;
     public static final String FRIENDLY_TAG_NAME = "friendly";
-
-    public static final int TEST_ORDER_ID = 2;
-    public static final int QUANTITY = 4;
-    public static final boolean COMPLETE = true;
-    public static final String ORDER_ID_PARAMETER = "orderId";
-    public static final String ORDER_NOT_FOUND_MESSAGE = "Order not found";
-    public static final String SHIP_DATE = "2024-08-29T08:58:30.874Z";
-    public static final String SHIP_DATE_DOES_NOT_MATCH_THE_EXPECTED_VALUE = "Ship date does not match the expected value.";
 
     private Constants() {
         throw new IllegalStateException("Utility class");

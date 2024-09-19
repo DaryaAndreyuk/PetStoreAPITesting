@@ -37,12 +37,22 @@ public class OrderController {
                 .response();
     }
 
-    public Response findOrder(int id) {
+    public Response findOrder(int orderId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
                 .when()
-                .request(Method.GET, ORDER_ENDPOINT + "/" + id)
+                .request(Method.GET, ORDER_ENDPOINT + "/" + orderId)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
+
+    public Response deleteOrder(int orderId) {
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .when()
+                .request(Method.DELETE, ORDER_ENDPOINT + "/" + orderId)
                 .then()
                 .log().ifError()
                 .extract()

@@ -1,12 +1,9 @@
-import controller.OrderController;
 import controller.UserController;
 import io.restassured.response.Response;
-import models.Pet;
 import models.User;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -45,7 +42,7 @@ public class UserSmokeTests extends BaseTest {
     @Test
     public void getExistingUserAAATest() {
         Response addResponse = userController.addDefaultUser();
-        // ???? addresponse returns not the Entity User, but code, message etc.
+        // ???? addResponse returns not the Entity User, but "code, message etc."
        // addResponse.prettyPrint();
        // User addedUser = addResponse.as(User.class);
 
