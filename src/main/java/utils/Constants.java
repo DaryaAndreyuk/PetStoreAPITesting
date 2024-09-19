@@ -62,9 +62,9 @@ public final class Constants {
     public static final Category UPDATED_CATEGORY = new Category(5, "Dogs with puppies");
 
     public static final Pet DEFAULT_PET = new Pet(3, DEFAULT_CATEGORY, "Rex",
-            List.of("http://example.com/rex.jpg"), List.of(new Tag(1, "Good dogs")), "available");
+            List.of("http://example.com/rex.jpg"), List.of(new Tag(1, "Good dogs")), "pending");
     public static final Pet UPDATED_PET = new Pet(3, UPDATED_CATEGORY, "Max",
-            List.of("http://example.com/max.jpg"), List.of(new Tag(1, "Very Good dogs")), "available");
+            List.of("http://example.com/max.jpg"), List.of(new Tag(1, "Very Good dogs")), "sold");
 
     public static final Order DEFAULT_ORDER = new Order(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
 

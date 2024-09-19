@@ -12,6 +12,7 @@ import static utils.Constants.*;
 
 public class PetController {
     private static final String PET_ENDPOINT = BASE_URL + "/pet";
+    private static final String STATUS_ENDPOINT = PET_ENDPOINT + "/findByStatus?status=";
 
     RequestSpecification requestSpecification = given();
 
@@ -47,6 +48,17 @@ public class PetController {
                 .response();
     }
 
+    public Response findByStatusPet(String status) {
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .when()
+                .request(Method.GET, STATUS_ENDPOINT + status)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
+
     public Response deletePet(int petId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -65,6 +77,20 @@ public class PetController {
                 .when()
                 .body(UPDATED_PET)
                 .request(Method.PUT, PET_ENDPOINT)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
+
+    public Response updatePetByIdFormData(Integer petId) {
+        String body = "name=" + UPDATED_PET.getName() + "&status=" + UPDATED_PET.getStatus();
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, "application/x-www-form-urlencoded")
+                .when()
+                .body(body)
+                .request(Method.POST, PET_ENDPOINT + "/" + petId)
                 .then()
                 .log().ifError()
                 .extract()

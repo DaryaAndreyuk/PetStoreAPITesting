@@ -8,6 +8,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static utils.Constants.*;
@@ -57,6 +59,21 @@ public class PetSmokeTests extends BaseTest {
     }
 
     @Test
+    public void getPetsByStatusTest() {
+        Response addResponse = petController.addDefaultPet();
+        Pet addedPet = addResponse.as(Pet.class);
+
+        Response getResponse = petController.findByStatusPet(addedPet.getStatus());
+        List<Pet> getPetList = getResponse.jsonPath().getList("", Pet.class);
+
+        String expectedStatus = addedPet.getStatus();
+        for (Pet pet : getPetList) {
+            Assert.assertEquals(pet.getStatus(), expectedStatus);
+        }
+        Assert.assertEquals(getResponse.statusCode(), 200);
+   }
+
+        @Test
     public void deleteExistingPetAAATest() {
         Response addResponse = petController.addDefaultPet();
         addResponse.prettyPrint();
@@ -78,6 +95,20 @@ public class PetSmokeTests extends BaseTest {
         Assert.assertEquals(updatedPetResponse.statusCode(), 200);
         Assert.assertEquals(UPDATED_PET, updatedPet);
 
+    }
+
+    @Test
+    public void updateExistingPetFormDataTest() {
+        Response addResponse = petController.addDefaultPet();
+        Pet addedPet = addResponse.as(Pet.class);
+
+        Response updatedPetResponse = petController.updatePetByIdFormData(addedPet.getId());
+        Response getResponse  = petController.findPet(addedPet.getId());
+
+        Pet updatedPet = getResponse.as(Pet.class);
+        Assert.assertEquals(updatedPetResponse.statusCode(), 200);
+        Assert.assertEquals(updatedPet.getName(), UPDATED_PET.getName());
+        Assert.assertEquals(updatedPet.getStatus(), UPDATED_PET.getStatus());
     }
 
 
@@ -111,13 +142,6 @@ public class PetSmokeTests extends BaseTest {
         response.then().statusCode(SUCCESS_STATUS_CODE);
         verifyPetResponse(response, TEST_PET_ID, UPDATED_PET_NAME, UPDATED_PET_PHOTO_URL, UPDATED_PET_STATUS, UPDATED_PET_CATEGORY_ID);
     }
-
-    @Test
-    public void deleteExistingPetTest() {
-        Response response = sendRequest(DELETE_METHOD, PET_ENDPOINT + "/" + TEST_PET_ID, null);
-        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, Integer.toString(TEST_PET_ID));
-    }
-
 
     @Test
     public void deleteNonExistingPetTest() {
