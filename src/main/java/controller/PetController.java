@@ -7,12 +7,15 @@ import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
+import java.io.File;
+
 import static io.restassured.RestAssured.given;
 import static utils.Constants.*;
 
 public class PetController {
     private static final String PET_ENDPOINT = BASE_URL + "/pet";
     private static final String STATUS_ENDPOINT = PET_ENDPOINT + "/findByStatus?status=";
+    private static final String UPLOAD_IMAGE_ENDPOINT = PET_ENDPOINT + "/" ;
 
     RequestSpecification requestSpecification = given();
 
@@ -36,7 +39,7 @@ public class PetController {
                 .response();
     }
 
-    public Response findPet(int petId) {
+    public Response findPet(long petId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
@@ -59,7 +62,7 @@ public class PetController {
                 .response();
     }
 
-    public Response deletePet(int petId) {
+    public Response deletePet(long petId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .when()
@@ -83,7 +86,7 @@ public class PetController {
                 .response();
     }
 
-    public Response updatePetByIdFormData(Integer petId) {
+    public Response updatePetByIdFormData(long petId) {
         String body = "name=" + UPDATED_PET.getName() + "&status=" + UPDATED_PET.getStatus();
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -91,6 +94,19 @@ public class PetController {
                 .when()
                 .body(body)
                 .request(Method.POST, PET_ENDPOINT + "/" + petId)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
+
+    public Response updatePetUploadImage (long petId) {
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, "multipart/form-data")
+                .when()
+                .multiPart("file", new File("I:\\idea-workspace\\PetStoreAPITesting\\cat.jpeg"))
+                .request(Method.POST, UPLOAD_IMAGE_ENDPOINT + petId + "/uploadImage")
                 .then()
                 .log().ifError()
                 .extract()

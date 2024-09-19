@@ -4,18 +4,18 @@ import java.util.List;
 import java.util.Objects;
 
 public class Pet {
-    private Integer id;
+    private long id;
     private Category category;
     private String name;
     private List<String> photoUrls;
     private List<Tag> tags;
     private String status;
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -59,7 +59,7 @@ public class Pet {
         this.status = status;
     }
 
-    public Pet(Integer id, Category category, String name, List<String> photoUrls, List<Tag> tags, String status) {
+    public Pet(long id, Category category, String name, List<String> photoUrls, List<Tag> tags, String status) {
         this.id = id;
         this.category = category;
         this.name = name;

@@ -1,5 +1,7 @@
 package utils;
+
 import models.*;
+
 import java.util.List;
 
 public final class Constants {
@@ -26,10 +28,6 @@ public final class Constants {
     public static final String DEFAULT_PASSWORD = "qwerty";
     public static final String DEFAULT_PHONE = "12345678";
 
-    public static final String STATUS_FIELD = "status";
-    public static final String CODE_FIELD = "code";
-    public static final String MESSAGE_FIELD = "message";
-
     public static final String ID_FIELD = "id";
     public static final String USERNAME_FIELD = "username";
     public static final String FIRST_NAME_FIELD = "firstName";
@@ -46,17 +44,8 @@ public final class Constants {
     public static final String UPDATED_PASSWORD = "updated_qwerty";
     public static final String UPDATED_PHONE = "87654321";
     public static final String USER_NOT_FOUND_MESSAGE = "User not found";
-    public static final String UPDATED_PET_PHOTO_URL = "http://example.com/max.jpg";
-    public static final String UPDATED_PET_NAME = "Max";
-    public static final int UPDATED_PET_CATEGORY_ID = 1;
-    public static final String UPDATED_PET_STATUS = "sold";
-
-    public static final int TEST_PET_ID = 41025555;
-    public static final int PET_CATEGORY_ID = 2;
-    public static final String PET_NAME = "Rex";
-    public static final String PET_PHOTO_URL = "http://example.com/rex.jpg";
-    public static final String AVAILABLE_STATUS = "available";
-    public static final String PET_NOT_FOUND_MESSAGE = "Pet not found";
+    public static final String NON_EXIST_ID = "99999999";
+    public static final int NON_EXIST_ID_INT = 99999999;
 
     public static final Category DEFAULT_CATEGORY = new Category(2, "Dogs");
     public static final Category UPDATED_CATEGORY = new Category(5, "Dogs with puppies");
@@ -71,19 +60,6 @@ public final class Constants {
     public static final User DEFAULT_USER = new User(2, "user_1",
             "firstName1", "lastName1", "email1@gmail.com", "qwerty", "12345678", 0);
 
-    public static final String PET_CATEGORY_ID_FIELD = "category.id";
-    public static final String PET_CATEGORY_NAME_FIELD = "category.name";
-    public static final String PET_NAME_FIELD = "name";
-    public static final String PET_PHOTO_URL_FIELD = "photoUrls[0]";
-    public static final String PET_TAG_ID_FIELD = "tags[0].id";
-    public static final String PET_TAG_NAME_FIELD = "tags[0].name";
-
-    public static final String NON_EXIST_ID = "99999999";
-    public static final int NON_EXIST_ID_INT = 99999999;
-
-    public static final String DOGS_CATEGORY_NAME = "Dogs";
-    public static final int FRIENDLY_TAG_ID = 1;
-    public static final String FRIENDLY_TAG_NAME = "friendly";
 
     private Constants() {
         throw new IllegalStateException("Utility class");
