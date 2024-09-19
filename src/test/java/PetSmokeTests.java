@@ -1,5 +1,6 @@
 import controller.PetController;
 import io.restassured.response.Response;
+import models.Order;
 import models.Pet;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
@@ -39,6 +40,7 @@ public class PetSmokeTests extends BaseTest {
 
         Response getResponse = petController.findPet(addedPet.getId());
         Pet getPet = getResponse.as(Pet.class);
+
         getResponse.prettyPrint();
         Assert.assertEquals(getResponse.statusCode(), 200);
         Assert.assertEquals(addedPet, getPet);
@@ -53,6 +55,31 @@ public class PetSmokeTests extends BaseTest {
         softAssertions.assertThat(addedPet.getStatus()).isEqualTo(getPet.getStatus());
         softAssertions.assertAll();
     }
+
+    @Test
+    public void deleteExistingPetAAATest() {
+        Response addResponse = petController.addDefaultPet();
+        addResponse.prettyPrint();
+        Pet addedPet = addResponse.as(Pet.class);
+        Response deleteResponse = petController.deletePet(addedPet.getId());
+        deleteResponse.prettyPrint();
+        Assert.assertEquals(deleteResponse.statusCode(), SUCCESS_STATUS_CODE);
+    }
+
+    @Test
+    public void updateExistingPetTest() {
+        Response addResponse = petController.addDefaultPet();
+        addResponse.prettyPrint();
+
+        Response updatedPetResponse = petController.updatePet();
+        Pet updatedPet = updatedPetResponse.as(Pet.class);
+        updatedPetResponse.prettyPrint();
+
+        Assert.assertEquals(updatedPetResponse.statusCode(), 200);
+        Assert.assertEquals(UPDATED_PET, updatedPet);
+
+    }
+
 
     @Test
     public void createPetTest() {
@@ -90,6 +117,7 @@ public class PetSmokeTests extends BaseTest {
         Response response = sendRequest(DELETE_METHOD, PET_ENDPOINT + "/" + TEST_PET_ID, null);
         verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, Integer.toString(TEST_PET_ID));
     }
+
 
     @Test
     public void deleteNonExistingPetTest() {

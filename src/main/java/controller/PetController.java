@@ -8,11 +8,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
-import static utils.Constants.ACCEPT_HEADER;
-import static utils.Constants.APP_JSON_TYPE;
-import static utils.Constants.BASE_URL;
-import static utils.Constants.CONTENT_TYPE_HEADER;
-import static utils.Constants.DEFAULT_PET;
+import static utils.Constants.*;
 
 public class PetController {
     private static final String PET_ENDPOINT = BASE_URL + "/pet";
@@ -39,12 +35,36 @@ public class PetController {
                 .response();
     }
 
-    public Response findPet(int id) {
+    public Response findPet(int petId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
                 .when()
-                .request(Method.GET, PET_ENDPOINT + "/" + id)
+                .request(Method.GET, PET_ENDPOINT + "/" + petId)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
+
+    public Response deletePet(int petId) {
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .when()
+                .request(Method.DELETE, PET_ENDPOINT + "/" + petId)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
+
+    public Response updatePet() {
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
+                .when()
+                .body(UPDATED_PET)
+                .request(Method.PUT, PET_ENDPOINT)
                 .then()
                 .log().ifError()
                 .extract()

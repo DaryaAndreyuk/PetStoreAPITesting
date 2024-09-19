@@ -46,23 +46,26 @@ public final class Constants {
     public static final String UPDATED_PASSWORD = "updated_qwerty";
     public static final String UPDATED_PHONE = "87654321";
     public static final String USER_NOT_FOUND_MESSAGE = "User not found";
+    public static final String UPDATED_PET_PHOTO_URL = "http://example.com/max.jpg";
+    public static final String UPDATED_PET_NAME = "Max";
+    public static final int UPDATED_PET_CATEGORY_ID = 1;
+    public static final String UPDATED_PET_STATUS = "sold";
 
     public static final int TEST_PET_ID = 41025555;
     public static final int PET_CATEGORY_ID = 2;
-    public static final int UPDATED_PET_CATEGORY_ID = 1;
     public static final String PET_NAME = "Rex";
-    public static final String UPDATED_PET_NAME = "Max";
     public static final String PET_PHOTO_URL = "http://example.com/rex.jpg";
-    public static final String UPDATED_PET_PHOTO_URL = "http://example.com/max.jpg";
     public static final String AVAILABLE_STATUS = "available";
-    public static final String UPDATED_PET_STATUS = "sold";
     public static final String PET_NOT_FOUND_MESSAGE = "Pet not found";
 
     public static final Category DEFAULT_CATEGORY = new Category(2, "Dogs");
+    public static final Category UPDATED_CATEGORY = new Category(5, "Dogs with puppies");
 
     public static final Pet DEFAULT_PET = new Pet(3, DEFAULT_CATEGORY, "Rex",
-            List.of("http://example.com/rex.jpg"), List.of(new Tag(1, "Good dogs")),
-            "available");
+            List.of("http://example.com/rex.jpg"), List.of(new Tag(1, "Good dogs")), "available");
+    public static final Pet UPDATED_PET = new Pet(3, UPDATED_CATEGORY, "Max",
+            List.of("http://example.com/max.jpg"), List.of(new Tag(1, "Very Good dogs")), "available");
+
     public static final Order DEFAULT_ORDER = new Order(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
 
     public static final User DEFAULT_USER = new User(2, "user_1",
