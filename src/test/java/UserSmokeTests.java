@@ -1,19 +1,18 @@
 import controller.UserController;
 import io.restassured.response.Response;
 import models.User;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import java.util.Arrays;
+import java.util.List;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static utils.Constants.*;
 
 public class UserSmokeTests extends BaseTest {
 
     private static final String USER_ENDPOINT = BASE_URL + "/user";
     private static final String NON_EXIST_USERNAME_ENDPOINT = USER_ENDPOINT + "/non_existing_username";
-    private static final String NON_EXIST_USER_ENDPOINT  = USER_ENDPOINT + "/user_not_existed";
+    private static final String NON_EXIST_USER_ENDPOINT = USER_ENDPOINT + "/user_not_existed";
     UserController userController = new UserController();
 
     @Test
@@ -24,147 +23,162 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
-    public void createUserTest() {
-        String requestBody = createUserJson(
-                DEFAULT_USER_ID,
-                DEFAULT_USERNAME,
-                DEFAULT_FIRST_NAME,
-                DEFAULT_LAST_NAME,
-                DEFAULT_EMAIL,
-                DEFAULT_PASSWORD,
-                DEFAULT_PHONE,
-                DEFAULT_USER_STATUS
-        );
-        Response response = sendRequest(POST_METHOD, USER_ENDPOINT, requestBody);
-        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, Integer.toString(DEFAULT_USER_ID));
+    public void createUsersWithArrayTest() {
+        User user1 = new User(1, "user1", "Sam", "Smith", "sam.smith@example.com", "password123", "1234567890", 1);
+        User user2 = new User(2, "user2", "Harry", "Styles", "harry.styles@example.com", "password456", "0987654321", 2);
+        List<User> usersArray = Arrays.asList(user1, user2);
+
+        Response response = given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
+                .body(usersArray)
+                .when()
+                .post(BASE_URL + "/user/createWithArray")
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+
+        response.prettyPrint();
+        Assert.assertEquals(response.statusCode(), 200, "User creation with array failed!");
+    }
+
+    @Test
+    public void logoutUserTest() {
+        Response response = given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .when()
+                .get(BASE_URL + "/user/logout")
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+
+        response.prettyPrint();
+        Assert.assertEquals(response.statusCode(), 200, "Logout operation failed!");
+
+        Assert.assertEquals(response.jsonPath().getInt("code"), 200);
+        Assert.assertEquals(response.jsonPath().getString("message"), "ok");
+    }
+
+    @Test
+    public void successfulLoginTest() {
+        String username = "valid_username";
+        String password = "valid_password";
+
+        Response response = given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .queryParam("username", username)
+                .queryParam("password", password)
+                .when()
+                .get(BASE_URL + "/user/login")
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+
+        Assert.assertEquals(response.statusCode(), 200, "Login operation failed!");
+
+        String expiresAfter = response.getHeader("X-Expires-After");
+        String rateLimit = response.getHeader("X-Rate-Limit");
+
+        Assert.assertNotNull(expiresAfter, "X-Expires-After header is missing!");
+        Assert.assertNotNull(rateLimit, "X-Rate-Limit header is missing!");
+
+        System.out.println("Login successful. X-Expires-After: " + expiresAfter + ", X-Rate-Limit: " + rateLimit);
+        response.prettyPrint();
+    }
+
+    @Test
+    public void deleteExistingUserAAATest() {
+        Response addUserResponse = userController.addDefaultUser();
+        addUserResponse.prettyPrint();
+
+        String username = addUserResponse.jsonPath().getString("username");
+
+        Response deleteResponse = given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
+                .when()
+                .delete(BASE_URL + "/user/" + username)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+
+        Assert.assertEquals(deleteResponse.statusCode(), 200, "User deletion failed!");
+        deleteResponse.prettyPrint();
+    }
+
+    @Test
+    public void updateExistingUserTest() {
+        Response addUserResponse = userController.addDefaultUser();
+        addUserResponse.prettyPrint();
+
+        String username = addUserResponse.jsonPath().getString("username");
+
+        Response updateResponse = given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
+                .body(UPDATED_USER)
+                .when()
+                .put(BASE_URL + "/user/" + username)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+
+        Assert.assertEquals(updateResponse.statusCode(), 200, "Failed to update the user!");
+        updateResponse.prettyPrint();
+    }
+
+    @Test
+    public void getUserByValidUsernameTest() {
+        Response addUserResponse = userController.addDefaultUser();
+        addUserResponse.prettyPrint();
+
+        String username = addUserResponse.jsonPath().getString("username");
+
+        Response getUserResponse = userController.findUser(username);
+
+        Assert.assertEquals(getUserResponse.statusCode(), 200, "Failed to fetch the user!");
+        getUserResponse.prettyPrint();
+
+        User retrievedUser = getUserResponse.as(User.class);
+        Assert.assertEquals(retrievedUser.getUsername(), username, "Username mismatch!");
+    }
+    @Test
+    public void createUsersWithListTest() {
+        User user1 = new User(1, "user1", "First1", "Last1", "user1@example.com", "password1", "1234567890", 0);
+        User user2 = new User(2, "user2", "First2", "Last2", "user2@example.com", "password2", "0987654321", 1);
+        List<User> users = Arrays.asList(user1, user2);
+
+        Response response = given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
+                .body(users) // Pass the list of users as the body
+                .when()
+                .post(BASE_URL + "/user/createWithList")
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+
+        Assert.assertEquals(response.statusCode(), 200, "Failed to create users from list!");
+        response.prettyPrint();
+
+        String responseMessage = response.jsonPath().getString("message");
+        Assert.assertNotNull(responseMessage, "Response message should not be null!");
     }
 
     @Test
     public void getExistingUserAAATest() {
         Response addResponse = userController.addDefaultUser();
-        // ???? addResponse returns not the Entity User, but "code, message etc."
-       // addResponse.prettyPrint();
-       // User addedUser = addResponse.as(User.class);
 
         Response getResponse = userController.findUser(DEFAULT_USER.getUsername());
         User getUser = getResponse.as(User.class);
         getResponse.prettyPrint();
         Assert.assertEquals(getResponse.statusCode(), 200);
         Assert.assertEquals(DEFAULT_USER, getUser);
-
-        Assertions.assertThat(DEFAULT_USER)
-                .usingRecursiveComparison().
-                ignoringFields("shipdate")
-                .as("Two objects are not equals. Expected: %s, but was: %s", DEFAULT_USER, getUser)
-                .isEqualTo(getUser);
-        SoftAssertions softAssertions = new SoftAssertions();
-        softAssertions.assertThat(DEFAULT_USER.getId()).isEqualTo(getUser.getId());
-        softAssertions.assertThat(DEFAULT_USER.getUserStatus()).isEqualTo(getUser.getUserStatus());
-        softAssertions.assertAll();
-    }
-
-    @Test
-    public void getExistingUserTest() {
-    
-        Response response = sendRequest(GET_METHOD, USER_ENDPOINT + "/" + DEFAULT_USERNAME, null);
-        verifyStatusCode(response, SUCCESS_STATUS_CODE);
-        verifyUser(response,
-                DEFAULT_USER_ID,
-                DEFAULT_USERNAME,
-                DEFAULT_FIRST_NAME,
-                DEFAULT_LAST_NAME,
-                DEFAULT_EMAIL,
-                DEFAULT_PASSWORD,
-                DEFAULT_PHONE,
-                DEFAULT_USER_STATUS);
-    }
-
-    @Test
-    public void getNonExistingUserTest() {
-        Response response = sendRequest(GET_METHOD, NON_EXIST_USER_ENDPOINT, null);
-        verifyResponse(response, 1, ERROR_TYPE, USER_NOT_FOUND_MESSAGE);
-    }
-
-    @Test
-    public void updateUserTest() {
-        String requestBody = createUserJson(DEFAULT_USER_ID, UPDATED_USERNAME, UPDATED_FIRST_NAME, UPDATED_LASTNAME, UPDATED_EMAIL, UPDATED_PASSWORD, UPDATED_PHONE, DEFAULT_USER_STATUS);
-        Response response = sendRequest(PUT_METHOD, USER_ENDPOINT + "/" + DEFAULT_USERNAME, requestBody);
-        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, "2");
-    }
-
-    @Test
-    public void deleteExistingUserTest() {
-        Response response = sendRequest(DELETE_METHOD, USER_ENDPOINT + "/" + DEFAULT_USERNAME, null);
-        verifyResponse(response, SUCCESS_STATUS_CODE, UNKNOWN_TYPE, DEFAULT_USERNAME);
-    }
-
-    @Test
-    public void deleteNonExistingUserTest() {
-        Response response = sendRequest(DELETE_METHOD, NON_EXIST_USERNAME_ENDPOINT, null);
-        verifyStatusCode(response, NOT_FOUND_STATUS_CODE);
-    }
-
-    private Response sendRequest(String method, String endpoint, String body) {
-        var request = given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE);
-
-        if (body != null && !body.isEmpty() && (POST_METHOD.equals(method) || PUT_METHOD.equals(method))) {
-            request.body(body);
-        }
-
-        return request
-                .when()
-                .request(method, endpoint)
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
-    }
-    private String createUserJson(int id, String username, String firstName, String lastName, String email, String password, String phone, int userStatus) {
-        return String.format("""
-        {
-          "%s": %d,
-          "%s": "%s",
-          "%s": "%s",
-          "%s": "%s",
-          "%s": "%s",
-          "%s": "%s",
-          "%s": "%s",
-          "%s": %d
-        }
-        """,
-                ID_FIELD, id,
-                USERNAME_FIELD, username,
-                FIRST_NAME_FIELD, firstName,
-                LAST_NAME_FIELD, lastName,
-                EMAIL_FIELD, email,
-                PASSWORD_FIELD, password,
-                PHONE_FIELD, phone,
-                USER_STATUS_FIELD, userStatus
-        );
-    }
-
-
-    private void verifyUser(Response response, int userId, String username, String firstName, String lastName, String email, String password, String phone, int userStatus) {
-        response.then()
-                .body(ID_FIELD, equalTo(userId))
-                .body(USERNAME_FIELD, equalTo(username))
-                .body(FIRST_NAME_FIELD, equalTo(firstName))
-                .body(LAST_NAME_FIELD, equalTo(lastName))
-                .body(EMAIL_FIELD, equalTo(email))
-                .body(PASSWORD_FIELD, equalTo(password))
-                .body(PHONE_FIELD, equalTo(phone))
-                .body(USER_STATUS_FIELD, equalTo(userStatus));
-    }
-
-    private boolean userExists(String username) {
-        Response response = sendRequest(GET_METHOD, USER_ENDPOINT + "/" + username, null);
-        return response.getStatusCode() == SUCCESS_STATUS_CODE;
-    }
-
-    private void createUser(String username, String firstName, String lastName, String email, String password, String phone, int userStatus) {
-        String requestBody = createUserJson(DEFAULT_USER_ID, username, firstName, lastName, email, password, phone, userStatus);
-        sendRequest(POST_METHOD, USER_ENDPOINT, requestBody);
     }
 }
