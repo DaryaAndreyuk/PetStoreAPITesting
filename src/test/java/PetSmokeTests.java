@@ -3,8 +3,13 @@ import io.restassured.response.Response;
 import models.Pet;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
 import static utils.Constants.*;
+import static utils.FileConfig.getPathToResourceFile;
 
 public class PetSmokeTests extends BaseTest {
 
@@ -18,7 +23,7 @@ public class PetSmokeTests extends BaseTest {
     public void createPetTestGena() {
         Response response = petController.addDefaultPet();
         response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), 200);
+        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
     }
 
     @Test
@@ -30,7 +35,7 @@ public class PetSmokeTests extends BaseTest {
         Pet getPet = getResponse.as(Pet.class);
 
         getResponse.prettyPrint();
-        Assert.assertEquals(getResponse.statusCode(), 200);
+        Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
         Assert.assertEquals(addedPet, getPet);
     }
 
@@ -43,7 +48,7 @@ public class PetSmokeTests extends BaseTest {
         for (Pet pet : getPetList) {
             Assert.assertEquals(pet.getStatus(), expectedStatus);
         }
-        Assert.assertEquals(getResponse.statusCode(), 200);
+        Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
     }
 
     @Test
@@ -65,7 +70,7 @@ public class PetSmokeTests extends BaseTest {
         Pet updatedPet = updatedPetResponse.as(Pet.class);
         updatedPetResponse.prettyPrint();
 
-        Assert.assertEquals(updatedPetResponse.statusCode(), 200);
+        Assert.assertEquals(updatedPetResponse.statusCode(), SUCCESS_STATUS_CODE);
         Assert.assertEquals(UPDATED_PET, updatedPet);
     }
 
@@ -78,7 +83,7 @@ public class PetSmokeTests extends BaseTest {
         Response getResponse = petController.findPet(addedPet.getId());
 
         Pet updatedPet = getResponse.as(Pet.class);
-        Assert.assertEquals(updatedPetResponse.statusCode(), 200);
+        Assert.assertEquals(updatedPetResponse.statusCode(), SUCCESS_STATUS_CODE);
         Assert.assertEquals(updatedPet.getName(), UPDATED_PET.getName());
         Assert.assertEquals(updatedPet.getStatus(), UPDATED_PET.getStatus());
     }
@@ -89,13 +94,15 @@ public class PetSmokeTests extends BaseTest {
         Pet addedPet = addResponse.as(Pet.class);
         addResponse.prettyPrint();
 
-        Response updatedPetResponse = petController.updatePetUploadImage(addedPet.getId());
+        Response updatedPetResponse = petController.updatePetUploadImage(addedPet.getId(), getPathToResourceFile("cat.jpeg"));
         updatedPetResponse.prettyPrint();
 
         Response getResponse = petController.findPet(addedPet.getId());
         Pet updatedPet = getResponse.as(Pet.class);
         getResponse.prettyPrint();
 
-        Assert.assertEquals(updatedPetResponse.statusCode(), 200);
+        Assert.assertEquals(updatedPetResponse.statusCode(), SUCCESS_STATUS_CODE);
     }
+
+
 }

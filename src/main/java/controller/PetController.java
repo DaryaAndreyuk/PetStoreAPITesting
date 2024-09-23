@@ -100,13 +100,18 @@ public class PetController {
                 .response();
     }
 
-    public Response updatePetUploadImage (long petId) {
+    public Response updatePetUploadImage(long petId, String filePath) {
+        File imageFile = new File(filePath);
+        if (!imageFile.exists()) {
+            throw new IllegalArgumentException("File not found: " + filePath);
+        }
+
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .header(CONTENT_TYPE_HEADER, "multipart/form-data")
+                .multiPart("file", imageFile)
                 .when()
-                .multiPart("file", new File("I:\\idea-workspace\\PetStoreAPITesting\\cat.jpeg"))
-                .request(Method.POST, UPLOAD_IMAGE_ENDPOINT + petId + "/uploadImage")
+                .post(UPLOAD_IMAGE_ENDPOINT + petId + "/uploadImage")
                 .then()
                 .log().ifError()
                 .extract()

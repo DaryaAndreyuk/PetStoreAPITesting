@@ -13,14 +13,14 @@ public class UserSmokeTests extends BaseTest {
     public void createUserTest() {
         Response response = userController.addDefaultUser();
         response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), 200);
+        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
     }
 
     @Test
     public void createUsersWithArrayTest() {
         Response response = userController.addDefaultUsersWithArray();
         response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), 200);
+        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
     }
 
     @Test
@@ -35,7 +35,7 @@ public class UserSmokeTests extends BaseTest {
     @Test
     public void loginUserTest() {
         Response response = userController.loginUser();
-        Assert.assertEquals(response.statusCode(), 200, "Login operation failed!");
+        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
         String expiresAfter = response.getHeader("X-Expires-After");
         String rateLimit = response.getHeader("X-Rate-Limit");
         Assert.assertNotNull(expiresAfter, "X-Expires-After header is missing!");
@@ -54,7 +54,7 @@ public class UserSmokeTests extends BaseTest {
         deleteResponse.prettyPrint();
 
         APIResponse actualResponse = deleteResponse.as(APIResponse.class);
-        Assert.assertEquals(actualResponse.getCode(), 200);
+        Assert.assertEquals(actualResponse.getCode(), SUCCESS_STATUS_CODE);
         Assert.assertEquals(actualResponse.getMessage(), DEFAULT_USER.getUsername());
     }
 
@@ -83,17 +83,17 @@ public class UserSmokeTests extends BaseTest {
         Response addUserResponse = userController.addDefaultUser();
         addUserResponse.prettyPrint();
         APIResponse actualResponse = addUserResponse.as(APIResponse.class);
-        Assert.assertEquals(actualResponse.getCode(), 200);
+        Assert.assertEquals(actualResponse.getCode(), SUCCESS_STATUS_CODE);
 
         String username = DEFAULT_USER.getUsername();
 
         Response getUserResponse = userController.findUser(username);
 
-        Assert.assertEquals(getUserResponse.statusCode(), 200, "Failed to fetch the user!");
+        Assert.assertEquals(getUserResponse.statusCode(), SUCCESS_STATUS_CODE);
         getUserResponse.prettyPrint();
 
         User retrievedUser = getUserResponse.as(User.class);
-        Assert.assertEquals(retrievedUser.getUsername(), username, "Username mismatch!");
+        Assert.assertEquals(retrievedUser.getUsername(), username);
         Assert.assertEquals(retrievedUser, DEFAULT_USER);
     }
 
@@ -103,7 +103,7 @@ public class UserSmokeTests extends BaseTest {
         Response getResponse = userController.findUser(DEFAULT_USER.getUsername());
         User getUser = getResponse.as(User.class);
         getResponse.prettyPrint();
-        Assert.assertEquals(getResponse.statusCode(), 200);
+        Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
         Assert.assertEquals(DEFAULT_USER, getUser);
     }
 }
