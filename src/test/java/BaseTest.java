@@ -22,17 +22,4 @@ public class BaseTest {
     public void beforeEachTest() {
         logger.info("Starting a new test");
     }
-
-    public void verifyStatusCode(Response response, int statusCode) {
-        logger.info("Verifying status code: expected {}, actual {}", statusCode, response.getStatusCode());
-        response.then().statusCode(statusCode);
-    }
-
-    public void verifyResponse(Response response, int code, String type, String message) {
-        logger.info("Verifying response: expected code {}, type {}, message {}", code, type, message);
-        response.then()
-                .body("code", equalTo(code))
-                .body("type", equalTo(type))
-                .body("message", equalTo(message));
-    }
 }

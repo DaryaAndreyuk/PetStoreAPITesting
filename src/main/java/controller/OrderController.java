@@ -6,7 +6,6 @@ import io.restassured.http.Method;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
 import static io.restassured.RestAssured.given;
 import static utils.Constants.*;
 import static utils.Constants.APP_JSON_TYPE;

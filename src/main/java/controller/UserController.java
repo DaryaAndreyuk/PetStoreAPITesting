@@ -17,7 +17,7 @@ import static utils.Constants.*;
 public class UserController {
     private static final String USER_ENDPOINT = BASE_URL + "/user";
     private static final String NON_EXIST_USERNAME_ENDPOINT = USER_ENDPOINT + "/non_existing_username";
-    private static final String NON_EXIST_USER_ENDPOINT  = USER_ENDPOINT + "/user_not_existed";
+    private static final String NON_EXIST_USER_ENDPOINT = USER_ENDPOINT + "/user_not_existed";
 
     RequestSpecification requestSpecification = given();
 
@@ -41,7 +41,7 @@ public class UserController {
                 .response();
     }
 
-    public Response addDefaultUserWithArray(){
+    public Response addDefaultUsersWithArray() {
         User user1 = new User(1, "user1", "Sam", "Smith", "sam.smith@example.com", "password123", "1234567890", 1);
         User user2 = new User(2, "user2", "Harry", "Styles", "harry.styles@example.com", "password456", "0987654321", 2);
         List<User> usersArray = Arrays.asList(DEFAULT_USER, user1, user2);
@@ -58,7 +58,7 @@ public class UserController {
                 .response();
     }
 
-    public Response logoutUser(){
+    public Response logoutUser() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .when()
@@ -69,7 +69,7 @@ public class UserController {
                 .response();
     }
 
-    public Response loginUser(){
+    public Response loginUser() {
         String username = "valid_username";
         String password = "valid_password";
 
@@ -85,7 +85,7 @@ public class UserController {
                 .response();
     }
 
-    public Response deleteUser(String username){
+    public Response deleteUser(String username) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
@@ -103,6 +103,19 @@ public class UserController {
                 .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
                 .when()
                 .request(Method.GET, USER_ENDPOINT + "/" + username)
+                .then()
+                .log().ifError()
+                .extract()
+                .response();
+    }
+
+    public Response updateUser(String username) {
+        return given()
+                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
+                .body(UPDATED_USER)
+                .when()
+                .put(BASE_URL + "/user/" + username)
                 .then()
                 .log().ifError()
                 .extract()

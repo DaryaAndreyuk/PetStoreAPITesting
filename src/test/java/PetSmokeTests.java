@@ -47,7 +47,7 @@ public class PetSmokeTests extends BaseTest {
     }
 
     @Test
-    public void deleteExistingPetAAATest() {
+    public void deleteExistingPetTest() {
         Response addResponse = petController.addDefaultPet();
         addResponse.prettyPrint();
         Pet addedPet = addResponse.as(Pet.class);

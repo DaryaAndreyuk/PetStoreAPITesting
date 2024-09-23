@@ -1,18 +1,16 @@
 import controller.UserController;
 import io.restassured.response.Response;
+import models.APIResponse;
 import models.User;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import java.util.Arrays;
-import java.util.List;
-import static io.restassured.RestAssured.given;
 import static utils.Constants.*;
 
 public class UserSmokeTests extends BaseTest {
     UserController userController = new UserController();
 
     @Test
-    public void createUserAAATest() {
+    public void createUserTest() {
         Response response = userController.addDefaultUser();
         response.prettyPrint();
         Assert.assertEquals(response.statusCode(), 200);
@@ -20,7 +18,7 @@ public class UserSmokeTests extends BaseTest {
 
     @Test
     public void createUsersWithArrayTest() {
-        Response response = userController.addDefaultUserWithArray();
+        Response response = userController.addDefaultUsersWithArray();
         response.prettyPrint();
         Assert.assertEquals(response.statusCode(), 200);
     }
@@ -28,14 +26,14 @@ public class UserSmokeTests extends BaseTest {
     @Test
     public void logoutUserTest() {
         Response response = userController.logoutUser();
+        APIResponse actualResponse = response.as(APIResponse.class);
         response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), 200);
-        Assert.assertEquals(response.jsonPath().getInt("code"), 200);
-        Assert.assertEquals(response.jsonPath().getString("message"), "ok");
+        Assert.assertEquals(actualResponse.getCode(), SUCCESS_API_RESPONSE.getCode());
+        Assert.assertEquals(actualResponse, SUCCESS_API_RESPONSE);
     }
 
     @Test
-    public void loginTest() {
+    public void loginUserTest() {
         Response response = userController.loginUser();
         Assert.assertEquals(response.statusCode(), 200, "Login operation failed!");
         String expiresAfter = response.getHeader("X-Expires-After");
@@ -47,43 +45,47 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
-    public void deleteExistingUserAAATest() {
+    public void deleteExistingUserTest() {
         Response addUserResponse = userController.addDefaultUser();
         addUserResponse.prettyPrint();
-        String username = addUserResponse.jsonPath().getString("username");
+
+        String username = DEFAULT_USER.getUsername();
         Response deleteResponse = userController.deleteUser(username);
-        Assert.assertEquals(deleteResponse.statusCode(), 200, "User deletion failed!");
         deleteResponse.prettyPrint();
+
+        APIResponse actualResponse = deleteResponse.as(APIResponse.class);
+        Assert.assertEquals(actualResponse.getCode(), 200);
+        Assert.assertEquals(actualResponse.getMessage(), DEFAULT_USER.getUsername());
     }
 
     @Test
     public void updateExistingUserTest() {
         Response addUserResponse = userController.addDefaultUser();
         addUserResponse.prettyPrint();
+        APIResponse actualResponse = addUserResponse.as(APIResponse.class);
+        Integer addedUserId = Integer.parseInt(actualResponse.getMessage());
+        Assert.assertEquals(addedUserId, DEFAULT_USER.getId());
 
-        String username = addUserResponse.jsonPath().getString("username");
-
-        Response updateResponse = given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
-                .body(UPDATED_USER)
-                .when()
-                .put(BASE_URL + "/user/" + username)
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
-
-        Assert.assertEquals(updateResponse.statusCode(), 200, "Failed to update the user!");
+        Response updateResponse = userController.updateUser(DEFAULT_USER.getUsername());
         updateResponse.prettyPrint();
+        APIResponse actualResponse1 = updateResponse.as(APIResponse.class);
+        Integer updatedUserId = Integer.parseInt(actualResponse1.getMessage());
+        Assert.assertEquals(updatedUserId, UPDATED_USER.getId());
+
+        Response getUserResponse = userController.findUser(UPDATED_USER.getUsername());
+        getUserResponse.prettyPrint();
+        User actualUser = getUserResponse.as(User.class);
+        Assert.assertEquals(actualUser, UPDATED_USER);
     }
 
     @Test
     public void getUserByValidUsernameTest() {
         Response addUserResponse = userController.addDefaultUser();
         addUserResponse.prettyPrint();
+        APIResponse actualResponse = addUserResponse.as(APIResponse.class);
+        Assert.assertEquals(actualResponse.getCode(), 200);
 
-        String username = addUserResponse.jsonPath().getString("username");
+        String username = DEFAULT_USER.getUsername();
 
         Response getUserResponse = userController.findUser(username);
 
@@ -92,33 +94,11 @@ public class UserSmokeTests extends BaseTest {
 
         User retrievedUser = getUserResponse.as(User.class);
         Assert.assertEquals(retrievedUser.getUsername(), username, "Username mismatch!");
-    }
-    @Test
-    public void createUsersWithListTest() {
-        User user1 = new User(1, "user1", "First1", "Last1", "user1@example.com", "password1", "1234567890", 0);
-        User user2 = new User(2, "user2", "First2", "Last2", "user2@example.com", "password2", "0987654321", 1);
-        List<User> users = Arrays.asList(user1, user2);
-
-        Response response = given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
-                .body(users) // Pass the list of users as the body
-                .when()
-                .post(BASE_URL + "/user/createWithList")
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
-
-        Assert.assertEquals(response.statusCode(), 200, "Failed to create users from list!");
-        response.prettyPrint();
-
-        String responseMessage = response.jsonPath().getString("message");
-        Assert.assertNotNull(responseMessage, "Response message should not be null!");
+        Assert.assertEquals(retrievedUser, DEFAULT_USER);
     }
 
     @Test
-    public void getExistingUserAAATest() {
+    public void getExistingUserTest() {
         Response addResponse = userController.addDefaultUser();
         Response getResponse = userController.findUser(DEFAULT_USER.getUsername());
         User getUser = getResponse.as(User.class);

@@ -26,10 +26,11 @@ public final class Constants {
 
     public static final Order DEFAULT_ORDER = new Order(2, 3, 4, "2024-08-29T08:58:30.874Z", "placed", true);
 
-    public static final User DEFAULT_USER = new User(2, "user_1",
+    public static final User DEFAULT_USER = new User(5, "user_1",
             "firstName1", "lastName1", "email1@gmail.com", "qwerty", "12345678", 0);
     public static final User UPDATED_USER = new User(2, "updated_user_1",
             "updated_firstName1", "updated_lastName1", "updated_email1@gmail.com", "updated_qwerty", "87654321", 0);
+    public static final APIResponse SUCCESS_API_RESPONSE = new APIResponse(200, "unknown", "ok");
 
     private Constants() {
         throw new IllegalStateException("Utility class");

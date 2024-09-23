@@ -10,14 +10,14 @@ public class OrderSmokeTests extends BaseTest {
     OrderController orderController = new OrderController();
 
     @Test
-    public void createOrderAAATest() {
+    public void createOrderTest() {
         Response response = orderController.addDefaultOrder();
         response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), 200);
+        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
     }
 
     @Test
-    public void getExistingOrderAAATest() {
+    public void getExistingOrderTest() {
         Response addResponse = orderController.addDefaultOrder();
 
         addResponse.prettyPrint();
@@ -27,7 +27,6 @@ public class OrderSmokeTests extends BaseTest {
         Order getOrder = getResponse.as(Order.class);
         getResponse.prettyPrint();
 
-        //first approach
         Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
         Assert.assertEquals(addedOrder, getOrder);
     }
@@ -49,18 +48,3 @@ public class OrderSmokeTests extends BaseTest {
         Assert.assertEquals(deleteResponse.statusCode(), SUCCESS_STATUS_CODE);
     }
 }
-
-
-/*
-//second approach
-Assertions.assertThat(addedOrder)
-.usingRecursiveComparison().
-ignoringFields("shipDate")
-.as("Two objects are not equals. Expected: %s, but was: %s", addedOrder, getOrder)
-.isEqualTo(getOrder);
-
-//third approach
-SoftAssertions softAssertions = new SoftAssertions();
-softAssertions.assertThat(addedOrder.getId()).isEqualTo(getOrder.getId());
-softAssertions.assertThat(addedOrder.getStatus()).isEqualTo(getOrder.getStatus());
-softAssertions.assertAll();*/
