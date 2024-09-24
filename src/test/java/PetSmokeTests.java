@@ -3,21 +3,13 @@ import io.restassured.response.Response;
 import models.Pet;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-
 import static utils.Constants.*;
 import static utils.FileConfig.getPathToResourceFile;
 
 public class PetSmokeTests extends BaseTest {
 
-    private static final String PET_ENDPOINT = BASE_URL + "/pet";
-    private static final String NON_EXIST_PET_ENDPOINT = PET_ENDPOINT + "/" + NON_EXIST_ID;
-
     PetController petController = new PetController();
-
 
     @Test
     public void createPetTestGena() {
@@ -103,6 +95,4 @@ public class PetSmokeTests extends BaseTest {
 
         Assert.assertEquals(updatedPetResponse.statusCode(), SUCCESS_STATUS_CODE);
     }
-
-
 }

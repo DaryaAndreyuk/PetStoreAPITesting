@@ -2,6 +2,7 @@ package utils;
 
 import models.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 public final class Constants {
@@ -30,6 +31,10 @@ public final class Constants {
             "firstName1", "lastName1", "email1@gmail.com", FileConfig.getProperty("default_user_password"), "12345678", 0);
     public static final User UPDATED_USER = new User(2, "updated_user_1",
             "updated_firstName1", "updated_lastName1", "updated_email1@gmail.com", FileConfig.getProperty("updated_user_password"), "87654321", 0);
+
+    public static final User user1 = new User(1, "user1", "Sam", "Smith", "sam.smith@example.com", "password123", "1234567890", 1);
+    public static final User user2 = new User(2, "user2", "Harry", "Styles", "harry.styles@example.com", "password456", "0987654321", 2);
+    public static final  List<User> DEFAULT_USERS_ARRAY = Arrays.asList(DEFAULT_USER, user1, user2);
 
     public static final APIResponse SUCCESS_API_RESPONSE = new APIResponse(200, "unknown", "ok");
 

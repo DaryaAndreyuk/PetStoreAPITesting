@@ -1,11 +1,8 @@
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.hamcrest.Matchers.equalTo;
 import static utils.Constants.BASE_URL;
 
 public class BaseTest {

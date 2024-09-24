@@ -6,9 +6,7 @@ import io.restassured.http.Method;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
 import java.io.File;
-
 import static io.restassured.RestAssured.given;
 import static utils.Constants.*;
 
@@ -87,12 +85,12 @@ public class PetController {
     }
 
     public Response updatePetByIdFormData(long petId) {
-        String body = "name=" + UPDATED_PET.getName() + "&status=" + UPDATED_PET.getStatus();
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
                 .header(CONTENT_TYPE_HEADER, "application/x-www-form-urlencoded")
                 .when()
-                .body(body)
+                .formParam("name", UPDATED_PET.getName())
+                .formParam("status", UPDATED_PET.getStatus())
                 .request(Method.POST, PET_ENDPOINT + "/" + petId)
                 .then()
                 .log().ifError()

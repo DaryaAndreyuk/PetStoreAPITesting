@@ -21,7 +21,6 @@ public class FileConfig {
         return properties.getProperty(key);
     }
 
-
     public static String getPathToResourceFile(String fileName) {
         String projectDir = System.getProperty("user.dir");
         Path filePath = Paths.get(projectDir, "src", "main", "resources", fileName);

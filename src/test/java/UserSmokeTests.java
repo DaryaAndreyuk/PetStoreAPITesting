@@ -34,7 +34,7 @@ public class UserSmokeTests extends BaseTest {
 
     @Test
     public void loginUserTest() {
-        Response response = userController.loginUser();
+        Response response = userController.validUserLogin();
         Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
         String expiresAfter = response.getHeader("X-Expires-After");
         String rateLimit = response.getHeader("X-Rate-Limit");
@@ -66,7 +66,7 @@ public class UserSmokeTests extends BaseTest {
         Integer addedUserId = Integer.parseInt(actualResponse.getMessage());
         Assert.assertEquals(addedUserId, DEFAULT_USER.getId());
 
-        Response updateResponse = userController.updateUser(DEFAULT_USER.getUsername());
+        Response updateResponse = userController.updateUserWithDefaultData(DEFAULT_USER.getUsername());
         updateResponse.prettyPrint();
         APIResponse actualResponse1 = updateResponse.as(APIResponse.class);
         Integer updatedUserId = Integer.parseInt(actualResponse1.getMessage());

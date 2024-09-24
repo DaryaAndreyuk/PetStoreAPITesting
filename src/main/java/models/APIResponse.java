@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 public class APIResponse {
 
     private Integer code;
@@ -42,23 +44,14 @@ public class APIResponse {
 
     @Override
     public int hashCode() {
-        int result = 1;
-        result = ((result * 31) + ((this.code == null) ? 0 : this.code.hashCode()));
-        result = ((result * 31) + ((this.type == null) ? 0 : this.type.hashCode()));
-        result = ((result * 31) + ((this.message == null) ? 0 : this.message.hashCode()));
-        return result;
+        return Objects.hash(getCode(), getType(), getMessage());
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof APIResponse)) {
-            return false;
-        }
-        APIResponse apiResponse = ((APIResponse) other);
-        return ((((this.code == apiResponse.code) || ((this.code != null) && this.code.equals(apiResponse.code))) && ((this.type == apiResponse.type) || ((this.type != null) && this.type.equals(apiResponse.type)))) && ((this.message == apiResponse.message) || ((this.message != null) && this.message.equals(apiResponse.message))));
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        APIResponse that = (APIResponse) o;
+        return Objects.equals(getCode(), that.getCode()) && Objects.equals(getType(), that.getType()) && Objects.equals(getMessage(), that.getMessage());
     }
-
 }
