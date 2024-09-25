@@ -4,7 +4,10 @@ import models.Order;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import static utils.Constants.*;
+import org.testng.annotations.Listeners;
+import io.qameta.allure.testng.AllureTestNg;
 
+@Listeners({AllureTestNg.class})
 public class OrderSmokeTests extends BaseTest {
 
     OrderController orderController = new OrderController();
