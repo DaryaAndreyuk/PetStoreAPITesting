@@ -1,6 +1,7 @@
 package controller;
 
 import io.qameta.allure.Step;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
@@ -23,6 +24,7 @@ public class PetController {
         this.requestSpecification.accept(ContentType.JSON);
         this.requestSpecification.contentType(ContentType.JSON);
         this.requestSpecification.baseUri(PET_ENDPOINT);
+        this.requestSpecification.filter(new AllureRestAssured());
     }
 
     @Step("Create default pet")

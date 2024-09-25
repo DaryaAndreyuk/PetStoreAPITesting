@@ -1,5 +1,6 @@
 package controller;
 
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
@@ -17,10 +18,12 @@ public class OrderController {
 
     public OrderController() {
         RestAssured.defaultParser = Parser.JSON;
-        this.requestSpecification = given()
+        this.requestSpecification =
+                given()
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
-                .baseUri(ORDER_ENDPOINT);
+                .baseUri(ORDER_ENDPOINT)
+                .filter(new AllureRestAssured());
     }
 
     @Step("Create default order")
