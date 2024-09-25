@@ -1,5 +1,6 @@
 package controller;
 
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
@@ -24,6 +25,7 @@ public class PetController {
         this.requestSpecification.baseUri(PET_ENDPOINT);
     }
 
+    @Step("Create default pet")
     public Response addDefaultPet() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -37,6 +39,7 @@ public class PetController {
                 .response();
     }
 
+    @Step("Get pet by ID {petId}")
     public Response findPet(long petId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -49,6 +52,7 @@ public class PetController {
                 .response();
     }
 
+    @Step("Create pet by status")
     public Response findByStatusPet(String status) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -60,6 +64,7 @@ public class PetController {
                 .response();
     }
 
+    @Step("Delete pet by ID: {petId}")
     public Response deletePet(long petId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -71,6 +76,7 @@ public class PetController {
                 .response();
     }
 
+    @Step("Update pet")
     public Response updatePet() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -84,6 +90,7 @@ public class PetController {
                 .response();
     }
 
+    @Step("Update pet by ID: {petId}")
     public Response updatePetByIdFormData(long petId) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -98,6 +105,7 @@ public class PetController {
                 .response();
     }
 
+    @Step("Update pet by ID: {petId} with some image: {filePath}")
     public Response updatePetUploadImage(long petId, String filePath) {
         File imageFile = new File(filePath);
         if (!imageFile.exists()) {

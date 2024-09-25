@@ -39,7 +39,7 @@ public class OrderController {
     public Response findOrder(int orderId) {
         return requestSpecification
                 .when()
-                .get("/" + orderId)  // Use relative URL
+                .get("/" + orderId)
                 .then()
                 .log().ifError()
                 .extract()
@@ -50,7 +50,7 @@ public class OrderController {
     public Response deleteOrder(int orderId) {
         return requestSpecification
                 .when()
-                .delete("/" + orderId)  // Use relative URL
+                .delete("/" + orderId)
                 .then()
                 .log().ifError()
                 .extract()
