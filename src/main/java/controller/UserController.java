@@ -1,5 +1,6 @@
 package controller;
 
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
@@ -21,6 +22,7 @@ public class UserController {
         this.requestSpecification.baseUri(USER_ENDPOINT);
     }
 
+    @Step("Create default user")
     public Response addDefaultUser() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -34,6 +36,7 @@ public class UserController {
                 .response();
     }
 
+    @Step("Create default users based on array of users")
     public Response addDefaultUsersWithArray() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -46,7 +49,7 @@ public class UserController {
                 .extract()
                 .response();
     }
-
+    @Step("Log out user")
     public Response logoutUser() {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -58,6 +61,7 @@ public class UserController {
                 .response();
     }
 
+    @Step("Log in of valid user")
     public Response validUserLogin() {
         String username = "valid_username";
         String password = "valid_password";
@@ -74,6 +78,7 @@ public class UserController {
                 .response();
     }
 
+    @Step("Delete user with username: {username}")
     public Response deleteUser(String username) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -86,6 +91,7 @@ public class UserController {
                 .response();
     }
 
+    @Step("Get user by username: {username}")
     public Response findUser(String username) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
@@ -98,6 +104,7 @@ public class UserController {
                 .response();
     }
 
+    @Step("Update user by username: {username} with default data")
     public Response updateUserWithDefaultData(String username) {
         return given()
                 .header(ACCEPT_HEADER, APP_JSON_TYPE)
