@@ -2,13 +2,12 @@ package controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.http.Method;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import io.qameta.allure.Step;
 import static io.restassured.RestAssured.given;
 import static utils.Constants.*;
-import static utils.Constants.APP_JSON_TYPE;
 
 public class OrderController {
 
@@ -18,40 +17,40 @@ public class OrderController {
 
     public OrderController() {
         RestAssured.defaultParser = Parser.JSON;
-        this.requestSpecification.accept(ContentType.JSON);
-        this.requestSpecification.contentType(ContentType.JSON);
-        this.requestSpecification.baseUri(ORDER_ENDPOINT);
+        this.requestSpecification = given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .baseUri(ORDER_ENDPOINT);
     }
 
+    @Step("Create default order")
     public Response addDefaultOrder() {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
-                .when()
+        return requestSpecification
                 .body(DEFAULT_ORDER)
-                .request(Method.POST, ORDER_ENDPOINT)
+                .when()
+                .post()
                 .then()
                 .log().ifError()
                 .extract()
                 .response();
     }
 
+    @Step("Get default order")
     public Response findOrder(int orderId) {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+        return requestSpecification
                 .when()
-                .request(Method.GET, ORDER_ENDPOINT + "/" + orderId)
+                .get("/" + orderId)  // Use relative URL
                 .then()
                 .log().ifError()
                 .extract()
                 .response();
     }
 
+    @Step("Delete order by ID {orderId}")
     public Response deleteOrder(int orderId) {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
+        return requestSpecification
                 .when()
-                .request(Method.DELETE, ORDER_ENDPOINT + "/" + orderId)
+                .delete("/" + orderId)  // Use relative URL
                 .then()
                 .log().ifError()
                 .extract()

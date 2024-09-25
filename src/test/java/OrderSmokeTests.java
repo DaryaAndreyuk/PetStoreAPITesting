@@ -1,4 +1,5 @@
 import controller.OrderController;
+import io.qameta.allure.Description;
 import io.restassured.response.Response;
 import models.Order;
 import org.testng.Assert;
@@ -13,6 +14,7 @@ public class OrderSmokeTests extends BaseTest {
     OrderController orderController = new OrderController();
 
     @Test
+    @Description("Add order test with default order")
     public void createOrderTest() {
         Response response = orderController.addDefaultOrder();
         response.prettyPrint();
@@ -20,6 +22,7 @@ public class OrderSmokeTests extends BaseTest {
     }
 
     @Test
+    @Description("Get existing order test")
     public void getExistingOrderTest() {
         Response addResponse = orderController.addDefaultOrder();
 
@@ -35,6 +38,7 @@ public class OrderSmokeTests extends BaseTest {
     }
 
     @Test
+    @Description("Get non existing order test")
     public void getNonExistingOrderTest() {
         Response getResponse = orderController.findOrder(NON_EXIST_ID_INT);
         getResponse.prettyPrint();
@@ -42,6 +46,7 @@ public class OrderSmokeTests extends BaseTest {
     }
 
     @Test
+    @Description("Delete order by ID test")
     public void deleteOrderByIdTest() {
         Response addResponse = orderController.addDefaultOrder();
         addResponse.prettyPrint();
