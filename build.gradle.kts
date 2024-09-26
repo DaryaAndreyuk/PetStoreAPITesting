@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     testImplementation("org.testng:testng:7.7.0")
-    testImplementation("org.assertj:assertj-core:3.26.3")
+    implementation("org.assertj:assertj-core:3.19.0")
     testImplementation("io.qameta.allure:allure-testng:2.21.0")
 
     implementation("org.hamcrest:hamcrest:2.2")
