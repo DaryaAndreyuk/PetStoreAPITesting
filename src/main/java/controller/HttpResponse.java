@@ -2,8 +2,10 @@ package controller;
 
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
+import lombok.Getter;
 import org.assertj.core.api.Assertions;
 
+@Getter
 public class HttpResponse {
     private final ValidatableResponse response;
 
@@ -20,11 +22,17 @@ public class HttpResponse {
     @Step("Check json value")
     public HttpResponse jsonValueIs(String path, String expectedValue) {
         String actualValue = this.response.extract().jsonPath().getString(path);
-        Assertions.assertThat(actualValue).as("Actual value '%s' " +
-                "is not equals to expected '%s' for the path '%s' and response: \n%s",
-                actualValue, expectedValue, path,
-                this.response.extract().response().andReturn().asPrettyString()).isEqualTo(expectedValue);
+        Assertions.assertThat(actualValue)
+                .as("Actual value '%s' is not equals to expected '%s' for the path '%s' and response: \n%s",
+                        actualValue, expectedValue, path, this.response.extract()
+                                .response().andReturn().asPrettyString()).isEqualTo(expectedValue);
         return this;
+    }
+
+    public String getJsonValue(String path) {
+        String value = this.response.extract().jsonPath().getString(path);
+        Assertions.assertThat(value).isNotNull();
+        return value;
     }
 
     @Override

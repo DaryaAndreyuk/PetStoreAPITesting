@@ -12,14 +12,19 @@ repositories {
 
 dependencies {
     testImplementation("org.testng:testng:7.7.0")
-    implementation("org.assertj:assertj-core:3.19.0")
     testImplementation("io.qameta.allure:allure-testng:2.21.0")
 
+    implementation("org.assertj:assertj-core:3.19.0")
     implementation("org.hamcrest:hamcrest:2.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("io.rest-assured:rest-assured:5.4.0")
     implementation("io.qameta.allure:allure-rest-assured:2.21.0")
     implementation("org.aspectj:aspectjweaver:1.9.21")
+
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    testCompileOnly("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 }
 
 tasks.test {
