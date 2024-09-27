@@ -29,6 +29,25 @@ public class HttpResponse {
         return this;
     }
 
+    @Step("Check json value is not null")
+    public HttpResponse jsonValueIsNotNull(String path) {
+        String actualValue = this.response.extract().jsonPath().getString(path);
+        Assertions.assertThat(actualValue)
+                .as("Expected non-null value for path '%s', but got null in response: \n%s", path, this.response.extract().response().asPrettyString())
+                .isNotNull();
+        return this;
+    }
+
+    @Step("Check json value is null")
+    public HttpResponse jsonValueIsNull(String path) {
+        String actualValue = this.response.extract().jsonPath().getString(path);
+        Assertions.assertThat(actualValue)
+                .as("Expected null value for path '%s', but got '%s' in response: \n%s", path, actualValue, this.response.extract().response().asPrettyString())
+                .isNull();
+        return this;
+    }
+
+
     public String getJsonValue(String path) {
         String value = this.response.extract().jsonPath().getString(path);
         Assertions.assertThat(value).isNotNull();

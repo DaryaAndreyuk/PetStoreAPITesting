@@ -16,7 +16,10 @@ public class OrderSmokeTests extends BaseTest {
     @Test
     @Description("Add order test with default order")
     public void createOrderTest() {
-        orderController.addDefaultOrder().statusCodeIs(HttpStatus.SC_OK)
+        orderController.addDefaultOrder()
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIsNotNull("shipDate")
+                .jsonValueIs("id", String.valueOf(DEFAULT_ORDER.getId()))
                 .jsonValueIs("petId", String.valueOf(DEFAULT_ORDER.getPetId()))
                 .jsonValueIs("quantity", String.valueOf(DEFAULT_ORDER.getQuantity()))
                 .jsonValueIs("status", DEFAULT_ORDER.getStatus())
@@ -28,7 +31,10 @@ public class OrderSmokeTests extends BaseTest {
     public void getExistingOrderTest() {
         var addResponse = orderController.addDefaultOrder().statusCodeIs(HttpStatus.SC_OK);
         int id = Integer.parseInt(addResponse.getJsonValue("id"));
-        orderController.findOrder(id).statusCodeIs(HttpStatus.SC_OK)
+        orderController.findOrder(id)
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIsNotNull("shipDate")
+                .jsonValueIs("id", String.valueOf(DEFAULT_ORDER.getId()))
                 .jsonValueIs("petId", String.valueOf(DEFAULT_ORDER.getPetId()))
                 .jsonValueIs("quantity", String.valueOf(DEFAULT_ORDER.getQuantity()))
                 .jsonValueIs("status", DEFAULT_ORDER.getStatus())
