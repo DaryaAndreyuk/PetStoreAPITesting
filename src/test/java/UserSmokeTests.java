@@ -18,7 +18,8 @@ public class UserSmokeTests extends BaseTest {
     @Test
     @Description("Create Users With Array Of Default Users Test")
     public void createUsersWithArrayTest() {
-        userController.addDefaultUsersWithArray().statusCodeIs(HttpStatus.SC_OK);
+        userController.addDefaultUsersWithArray()
+                .statusCodeIs(HttpStatus.SC_OK);
     }
 
     @Test
@@ -31,19 +32,13 @@ public class UserSmokeTests extends BaseTest {
 
     @Test
     @Description("Log In User Test")
-    public void loginUserTest() {
+    public void validUserLoginTest() {
         userController.validUserLogin().statusCodeIs(HttpStatus.SC_OK);
-
-       /* String expiresAfter = response.getHeader("X-Expires-After");
-        String rateLimit = response.getHeader("X-Rate-Limit");
-        Assert.assertNotNull(expiresAfter, "X-Expires-After header is missing!");
-        Assert.assertNotNull(rateLimit, "X-Rate-Limit header is missing!");*/
     }
 
     @Test
     @Description("Delete Existing User Test")
     public void deleteExistingUserTest() {
-        //get username from added user?
         userController.addDefaultUser().statusCodeIs(HttpStatus.SC_OK);
 
         userController.deleteUser(DEFAULT_USER.getUsername())
@@ -64,7 +59,14 @@ public class UserSmokeTests extends BaseTest {
 
         userController.findUser(UPDATED_USER.getUsername())
                 .statusCodeIs(HttpStatus.SC_OK)
-                .jsonValueIs("username", UPDATED_USER.getUsername());
+                .jsonValueIs("id", String.valueOf(UPDATED_USER.getId()))
+                .jsonValueIs("username", UPDATED_USER.getUsername())
+                .jsonValueIs("firstName", UPDATED_USER.getFirstName())
+                .jsonValueIs("lastName", UPDATED_USER.getLastName())
+                .jsonValueIs("email", UPDATED_USER.getEmail())
+                .jsonValueIs("password", UPDATED_USER.getPassword())
+                .jsonValueIs("phone", UPDATED_USER.getPhone())
+                .jsonValueIs("userStatus", String.valueOf(UPDATED_USER.getUserStatus()));
     }
 
     @Test
@@ -74,18 +76,34 @@ public class UserSmokeTests extends BaseTest {
                 .statusCodeIs(HttpStatus.SC_OK);
 
         String username = DEFAULT_USER.getUsername();
+
         userController.findUser(username)
                 .statusCodeIs(HttpStatus.SC_OK)
-                .jsonValueIs("username", DEFAULT_USER.getUsername());
+                .jsonValueIs("id", String.valueOf(DEFAULT_USER.getId()))
+                .jsonValueIs("username", DEFAULT_USER.getUsername())
+                .jsonValueIs("firstName", DEFAULT_USER.getFirstName())
+                .jsonValueIs("lastName", DEFAULT_USER.getLastName())
+                .jsonValueIs("email", DEFAULT_USER.getEmail())
+                .jsonValueIs("password", DEFAULT_USER.getPassword())
+                .jsonValueIs("phone", DEFAULT_USER.getPhone())
+                .jsonValueIs("userStatus", String.valueOf(DEFAULT_USER.getUserStatus()));
     }
 
     @Test
     @Description("Get Existing User Test")
     public void getExistingUserTest() {
-        userController.addDefaultUser().statusCodeIs(HttpStatus.SC_OK);
+        userController.addDefaultUser()
+                .statusCodeIs(HttpStatus.SC_OK);
 
         userController.findUser(DEFAULT_USER.getUsername())
                 .statusCodeIs(HttpStatus.SC_OK)
-                .jsonValueIs("username", DEFAULT_USER.getUsername());
+                .jsonValueIs("id", String.valueOf(DEFAULT_USER.getId()))
+                .jsonValueIs("username", DEFAULT_USER.getUsername())
+                .jsonValueIs("firstName", DEFAULT_USER.getFirstName())
+                .jsonValueIs("lastName", DEFAULT_USER.getLastName())
+                .jsonValueIs("email", DEFAULT_USER.getEmail())
+                .jsonValueIs("password", DEFAULT_USER.getPassword())
+                .jsonValueIs("phone", DEFAULT_USER.getPhone())
+                .jsonValueIs("userStatus", String.valueOf(DEFAULT_USER.getUserStatus()));
     }
 }
