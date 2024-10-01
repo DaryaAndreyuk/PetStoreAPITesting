@@ -10,6 +10,12 @@
 ## Technology stack used
 
 ![IDEA](images/Intelij_IDEA.svg)
+![Allure_Report](images/Allure_Report.svg)
+![Gradle](images/Gradle.svg)
+![Java](images/Java.svg)
+![RestAssured](images/RestAssured.svg)
+![testng](images/testng.png)
+
 
 To run this project, you need:
 
