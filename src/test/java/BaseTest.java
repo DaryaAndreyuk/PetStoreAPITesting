@@ -1,22 +1,22 @@
+import io.qameta.allure.Description;
 import io.restassured.RestAssured;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import static utils.Constants.BASE_URL;
 
+@Slf4j
 public class BaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseTest.class);
-
     @BeforeClass
-    public void setup() {
+    public void setupBaseURI() {
         RestAssured.baseURI = BASE_URL;
-        logger.info("Base URI set to {}", BASE_URL);
+        log.info("Base URI set to {}", BASE_URL);
     }
 
     @BeforeMethod
-    public void beforeEachTest() {
-        logger.info("Starting a new test");
+    public void logBeforeEachTest() {
+        log.info("Starting a new test");
     }
 }

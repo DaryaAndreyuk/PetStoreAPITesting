@@ -1,5 +1,8 @@
 import controller.OrderController;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
 import io.qameta.allure.testng.AllureTestNg;
 import models.Order;
 import org.apache.http.HttpStatus;
@@ -14,6 +17,9 @@ public class OrderSmokeTests extends BaseTest {
     OrderController orderController = new OrderController();
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Create order")
+    @Feature("API: Create order")
     @Description("Add order test with default order")
     public void createOrderTest() {
         orderController.addDefaultOrder()
@@ -22,6 +28,9 @@ public class OrderSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Get order")
+    @Feature("API: Get order")
     @Description("Get existing order test")
     public void getExistingOrderTest() {
         var addResponse = orderController.addDefaultOrder().statusCodeIs(HttpStatus.SC_OK);
@@ -37,6 +46,9 @@ public class OrderSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Find non existing order")
+    @Feature("API: Get non existing order")
     @Description("Get non existing order test")
     public void getNonExistingOrderTest() {
         orderController.findOrder(NON_EXIST_ID).statusCodeIs(HttpStatus.SC_NOT_FOUND);

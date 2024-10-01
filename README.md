@@ -3,19 +3,20 @@
 ## Portfolio project on automation of test scripts using API tests for [Swagger Pet Store](https://petstore.swagger.io/#/)
 
 ## Contents:
-- Technology stack used
-- Running tests from the terminal
-- Allure report example
+- [Technology stack used](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#technology-stack-used)
+- Running the Tests from the terminal
+- Viewing Allure Reports
 
 ## Technology stack used
 
-<img src="images/Intelij_IDEA.svg" alt="IDEA" width="6%" height="40"/> <img src="images/Allure_Report.svg" alt="Allure_Report" width="40" height="40"/> <img src="images/Gradle.svg" alt="Gradle" width="40" height="40"/> <img src="images/Java.svg" alt="Java" width="6%" height="40"/> <img src="images/RestAssured.svg" alt="RestAssured" width="40" height="40"/> <img src="images/testng.png" alt="testng" width="60" height="40"/>
+<img src="images/Intelij_IDEA.svg" alt="IDEA" width="10%" height="40"/> <img src="images/Allure_Report.svg" alt="Allure_Report" width="10%" height="40"/> <img src="images/Gradle.svg" alt="Gradle" width="10%" height="40"/> <img src="images/Java.svg" alt="Java" width="10%" height="40"/> <img src="images/RestAssured.svg" alt="RestAssured" width="10%" height="40"/> <img src="images/testng.png" alt="testng" width="60" height="40"/>
 
-To run this project, you need:
+In this project, automated tests are written in `Java` using the `Rest-Assured` framework for API testing.
 
-* Java 21 JDK
-
-* Gradle
+- `Gradle` is used as the build tool.
+- `TestNG` is the testing framework.
+- `Lombok` is utilized to simplify model creation in the API tests.
+- `Allure` Rest-Assured listener is applied for generating test reports.
 
 ## Running the Tests
 
@@ -28,6 +29,10 @@ To execute the tests, run the following command in the CLI:
 After running the tests, you can view the Allure reports by executing: 
 
 `gradlew allureServe` 
+
+## Example of Allure Report
+
+
 
 That's it! You've successfully run the tests.
 
