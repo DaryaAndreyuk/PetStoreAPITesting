@@ -17,7 +17,7 @@
 <a href="https://gradle.org/" rel="nofollow"><img width="13%" title="Gradle" src="images/Gradle.svg" alt="Gradle" style="max-width: 100%;"></a>
 <a href="https://github.com/"><img width="13%" title="GitHub" src="images/GitHub.svg" alt="GitHub" style="max-width: 100%;"></a>
 <a href="https://rest-assured.io/" rel="nofollow"><img width="13%" title="Rest Assured" src="images/RestAssured.svg" alt="RestAssured" style="max-width: 100%;"></a>
-<a href="https://testng.org/" rel="nofollow"><img width="14%" title="TestNG" src="images/testng1.png" alt="TestNG" style="max-width: 100%;"></a>
+<a href="https://testng.org/" rel="nofollow"><img width="14%" title="TestNG" src="images/TestNG.png" alt="TestNG" style="max-width: 100%;"></a>
 
 </p>
 
