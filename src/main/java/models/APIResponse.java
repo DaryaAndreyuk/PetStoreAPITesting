@@ -1,7 +1,11 @@
 package models;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.util.Objects;
 
+@Setter
+@Getter
 public class APIResponse {
 
     private Integer code;
@@ -15,30 +19,6 @@ public class APIResponse {
         super();
         this.code = code;
         this.type = type;
-        this.message = message;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
         this.message = message;
     }
 
