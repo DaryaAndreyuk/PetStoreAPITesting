@@ -24,4 +24,4 @@ After running the tests, you can view the Allure reports by executing:
 
 That's it! You've successfully run the tests.
 
-If you have any comments or suggestions, please feel free to contact me at: [dasha.andreyuk@gmail.com]()
+If you have any comments or suggestions, please feel free to contact me at: [dasha.andreyuk@gmail.com](dasha.andreyuk@gmail.com)
