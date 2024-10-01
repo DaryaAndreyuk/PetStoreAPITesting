@@ -1,8 +1,6 @@
 import controller.UserController;
-import io.restassured.response.Response;
-import models.APIResponse;
-import models.User;
-import org.testng.Assert;
+import io.qameta.allure.Description;
+import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 import static utils.Constants.*;
 
@@ -10,100 +8,102 @@ public class UserSmokeTests extends BaseTest {
     UserController userController = new UserController();
 
     @Test
+    @Description("Create User Test")
     public void createUserTest() {
-        Response response = userController.addDefaultUser();
-        response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
+        userController.addDefaultUser()
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("message", String.valueOf(DEFAULT_USER.getId()));
     }
 
     @Test
+    @Description("Create Users With Array Of Default Users Test")
     public void createUsersWithArrayTest() {
-        Response response = userController.addDefaultUsersWithArray();
-        response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
+        userController.addDefaultUsersWithArray()
+                .statusCodeIs(HttpStatus.SC_OK);
     }
 
     @Test
+    @Description("Log Out User Test")
     public void logoutUserTest() {
-        Response response = userController.logoutUser();
-        APIResponse actualResponse = response.as(APIResponse.class);
-        response.prettyPrint();
-        Assert.assertEquals(actualResponse.getCode(), SUCCESS_API_RESPONSE.getCode());
-        Assert.assertEquals(actualResponse, SUCCESS_API_RESPONSE);
+        userController.logoutUser()
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("code", String.valueOf(SUCCESS_API_RESPONSE.getCode()));
     }
 
     @Test
-    public void loginUserTest() {
-        Response response = userController.validUserLogin();
-        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
-        String expiresAfter = response.getHeader("X-Expires-After");
-        String rateLimit = response.getHeader("X-Rate-Limit");
-        Assert.assertNotNull(expiresAfter, "X-Expires-After header is missing!");
-        Assert.assertNotNull(rateLimit, "X-Rate-Limit header is missing!");
-        System.out.println("Login successful. X-Expires-After: " + expiresAfter + ", X-Rate-Limit: " + rateLimit);
-        response.prettyPrint();
+    @Description("Log In User Test")
+    public void validUserLoginTest() {
+        userController.validUserLogin().statusCodeIs(HttpStatus.SC_OK);
     }
 
     @Test
+    @Description("Delete Existing User Test")
     public void deleteExistingUserTest() {
-        Response addUserResponse = userController.addDefaultUser();
-        addUserResponse.prettyPrint();
+        userController.addDefaultUser().statusCodeIs(HttpStatus.SC_OK);
 
-        String username = DEFAULT_USER.getUsername();
-        Response deleteResponse = userController.deleteUser(username);
-        deleteResponse.prettyPrint();
-
-        APIResponse actualResponse = deleteResponse.as(APIResponse.class);
-        Assert.assertEquals(actualResponse.getCode(), SUCCESS_STATUS_CODE);
-        Assert.assertEquals(actualResponse.getMessage(), DEFAULT_USER.getUsername());
+        userController.deleteUser(DEFAULT_USER.getUsername())
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("message", DEFAULT_USER.getUsername());
     }
 
     @Test
+    @Description("Update Existing User Test")
     public void updateExistingUserTest() {
-        Response addUserResponse = userController.addDefaultUser();
-        addUserResponse.prettyPrint();
-        APIResponse actualResponse = addUserResponse.as(APIResponse.class);
-        Integer addedUserId = Integer.parseInt(actualResponse.getMessage());
-        Assert.assertEquals(addedUserId, DEFAULT_USER.getId());
+        userController.addDefaultUser()
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("message", String.valueOf(DEFAULT_USER.getId()));
 
-        Response updateResponse = userController.updateUserWithDefaultData(DEFAULT_USER.getUsername());
-        updateResponse.prettyPrint();
-        APIResponse actualResponse1 = updateResponse.as(APIResponse.class);
-        Integer updatedUserId = Integer.parseInt(actualResponse1.getMessage());
-        Assert.assertEquals(updatedUserId, UPDATED_USER.getId());
+        userController.updateUserWithDefaultData(DEFAULT_USER.getUsername())
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("message", String.valueOf(UPDATED_USER.getId()));
 
-        Response getUserResponse = userController.findUser(UPDATED_USER.getUsername());
-        getUserResponse.prettyPrint();
-        User actualUser = getUserResponse.as(User.class);
-        Assert.assertEquals(actualUser, UPDATED_USER);
+        userController.findUser(UPDATED_USER.getUsername())
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("id", String.valueOf(UPDATED_USER.getId()))
+                .jsonValueIs("username", UPDATED_USER.getUsername())
+                .jsonValueIs("firstName", UPDATED_USER.getFirstName())
+                .jsonValueIs("lastName", UPDATED_USER.getLastName())
+                .jsonValueIs("email", UPDATED_USER.getEmail())
+                .jsonValueIs("password", UPDATED_USER.getPassword())
+                .jsonValueIs("phone", UPDATED_USER.getPhone())
+                .jsonValueIs("userStatus", String.valueOf(UPDATED_USER.getUserStatus()));
     }
 
     @Test
+    @Description("Get User By Valid Username Test")
     public void getUserByValidUsernameTest() {
-        Response addUserResponse = userController.addDefaultUser();
-        addUserResponse.prettyPrint();
-        APIResponse actualResponse = addUserResponse.as(APIResponse.class);
-        Assert.assertEquals(actualResponse.getCode(), SUCCESS_STATUS_CODE);
+        userController.addDefaultUser()
+                .statusCodeIs(HttpStatus.SC_OK);
 
         String username = DEFAULT_USER.getUsername();
 
-        Response getUserResponse = userController.findUser(username);
-
-        Assert.assertEquals(getUserResponse.statusCode(), SUCCESS_STATUS_CODE);
-        getUserResponse.prettyPrint();
-
-        User retrievedUser = getUserResponse.as(User.class);
-        Assert.assertEquals(retrievedUser.getUsername(), username);
-        Assert.assertEquals(retrievedUser, DEFAULT_USER);
+        userController.findUser(username)
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("id", String.valueOf(DEFAULT_USER.getId()))
+                .jsonValueIs("username", DEFAULT_USER.getUsername())
+                .jsonValueIs("firstName", DEFAULT_USER.getFirstName())
+                .jsonValueIs("lastName", DEFAULT_USER.getLastName())
+                .jsonValueIs("email", DEFAULT_USER.getEmail())
+                .jsonValueIs("password", DEFAULT_USER.getPassword())
+                .jsonValueIs("phone", DEFAULT_USER.getPhone())
+                .jsonValueIs("userStatus", String.valueOf(DEFAULT_USER.getUserStatus()));
     }
 
     @Test
+    @Description("Get Existing User Test")
     public void getExistingUserTest() {
-        Response addResponse = userController.addDefaultUser();
-        Response getResponse = userController.findUser(DEFAULT_USER.getUsername());
-        User getUser = getResponse.as(User.class);
-        getResponse.prettyPrint();
-        Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
-        Assert.assertEquals(DEFAULT_USER, getUser);
+        userController.addDefaultUser()
+                .statusCodeIs(HttpStatus.SC_OK);
+
+        userController.findUser(DEFAULT_USER.getUsername())
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("id", String.valueOf(DEFAULT_USER.getId()))
+                .jsonValueIs("username", DEFAULT_USER.getUsername())
+                .jsonValueIs("firstName", DEFAULT_USER.getFirstName())
+                .jsonValueIs("lastName", DEFAULT_USER.getLastName())
+                .jsonValueIs("email", DEFAULT_USER.getEmail())
+                .jsonValueIs("password", DEFAULT_USER.getPassword())
+                .jsonValueIs("phone", DEFAULT_USER.getPhone())
+                .jsonValueIs("userStatus", String.valueOf(DEFAULT_USER.getUserStatus()));
     }
 }

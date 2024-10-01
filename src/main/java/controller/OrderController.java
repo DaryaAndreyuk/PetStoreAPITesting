@@ -1,60 +1,44 @@
 package controller;
 
+import io.qameta.allure.Step;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.http.Method;
 import io.restassured.parsing.Parser;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import static io.restassured.RestAssured.given;
-import static utils.Constants.*;
-import static utils.Constants.APP_JSON_TYPE;
+import static utils.Constants.BASE_URL;
+import static utils.Constants.DEFAULT_ORDER;
 
 public class OrderController {
 
     private static final String ORDER_ENDPOINT = BASE_URL + "/store/order";
 
-    RequestSpecification requestSpecification = given();
+    RequestSpecification requestSpecification;
 
     public OrderController() {
         RestAssured.defaultParser = Parser.JSON;
-        this.requestSpecification.accept(ContentType.JSON);
-        this.requestSpecification.contentType(ContentType.JSON);
-        this.requestSpecification.baseUri(ORDER_ENDPOINT);
+        this.requestSpecification =
+                given()
+                        .accept(ContentType.JSON)
+                        .contentType(ContentType.JSON)
+                        .baseUri(ORDER_ENDPOINT)
+                        .filter(new AllureRestAssured());
     }
 
-    public Response addDefaultOrder() {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .header(CONTENT_TYPE_HEADER, APP_JSON_TYPE)
-                .when()
-                .body(DEFAULT_ORDER)
-                .request(Method.POST, ORDER_ENDPOINT)
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
+    @Step("Create default order")
+    public HttpResponse addDefaultOrder() {
+        this.requestSpecification.body(DEFAULT_ORDER);
+        return new HttpResponse(given(requestSpecification).post().then());
     }
 
-    public Response findOrder(int orderId) {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .when()
-                .request(Method.GET, ORDER_ENDPOINT + "/" + orderId)
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
+    @Step("Get default order")
+    public HttpResponse findOrder(int orderId) {
+        return new HttpResponse(given(requestSpecification).get("/" + orderId).then());
     }
 
-    public Response deleteOrder(int orderId) {
-        return given()
-                .header(ACCEPT_HEADER, APP_JSON_TYPE)
-                .when()
-                .request(Method.DELETE, ORDER_ENDPOINT + "/" + orderId)
-                .then()
-                .log().ifError()
-                .extract()
-                .response();
+    @Step("Delete order by ID {orderId}")
+    public HttpResponse deleteOrder(int orderId) {
+        return new HttpResponse(given(requestSpecification).delete("/" + orderId).then());
     }
 }

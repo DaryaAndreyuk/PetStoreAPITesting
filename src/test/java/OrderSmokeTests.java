@@ -1,50 +1,54 @@
 import controller.OrderController;
-import io.restassured.response.Response;
+import io.qameta.allure.Description;
+import io.qameta.allure.testng.AllureTestNg;
 import models.Order;
-import org.testng.Assert;
+import org.apache.http.HttpStatus;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+
 import static utils.Constants.*;
 
+@Listeners({AllureTestNg.class})
 public class OrderSmokeTests extends BaseTest {
 
     OrderController orderController = new OrderController();
 
     @Test
+    @Description("Add order test with default order")
     public void createOrderTest() {
-        Response response = orderController.addDefaultOrder();
-        response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
+        orderController.addDefaultOrder()
+                .statusCodeIs(HttpStatus.SC_OK)
+                .compareWithObject(DEFAULT_ORDER, Order.class);
     }
 
     @Test
+    @Description("Get existing order test")
     public void getExistingOrderTest() {
-        Response addResponse = orderController.addDefaultOrder();
-
-        addResponse.prettyPrint();
-        Order addedOrder = addResponse.as(Order.class);
-
-        Response getResponse = orderController.findOrder(addedOrder.getId());
-        Order getOrder = getResponse.as(Order.class);
-        getResponse.prettyPrint();
-
-        Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
-        Assert.assertEquals(addedOrder, getOrder);
+        var addResponse = orderController.addDefaultOrder().statusCodeIs(HttpStatus.SC_OK);
+        int id = Integer.parseInt(addResponse.getJsonValue("id"));
+        orderController.findOrder(id)
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIsNotNull("shipDate")
+                .jsonValueIs("id", String.valueOf(DEFAULT_ORDER.getId()))
+                .jsonValueIs("petId", String.valueOf(DEFAULT_ORDER.getPetId()))
+                .jsonValueIs("quantity", String.valueOf(DEFAULT_ORDER.getQuantity()))
+                .jsonValueIs("status", DEFAULT_ORDER.getStatus())
+                .jsonValueIs("complete", String.valueOf(DEFAULT_ORDER.getComplete()));
     }
 
     @Test
+    @Description("Get non existing order test")
     public void getNonExistingOrderTest() {
-        Response getResponse = orderController.findOrder(NON_EXIST_ID_INT);
-        getResponse.prettyPrint();
-        Assert.assertEquals(getResponse.statusCode(), NOT_FOUND_STATUS_CODE);
+        orderController.findOrder(NON_EXIST_ID).statusCodeIs(HttpStatus.SC_NOT_FOUND);
     }
 
     @Test
+    @Description("Delete order by ID test")
     public void deleteOrderByIdTest() {
-        Response addResponse = orderController.addDefaultOrder();
-        addResponse.prettyPrint();
-        Order addedOrder = addResponse.as(Order.class);
-        Response deleteResponse = orderController.deleteOrder(addedOrder.getId());
-        deleteResponse.prettyPrint();
-        Assert.assertEquals(deleteResponse.statusCode(), SUCCESS_STATUS_CODE);
+        int id = Integer.parseInt(
+                orderController.addDefaultOrder()
+                        .statusCodeIs(HttpStatus.SC_OK)
+                        .getJsonValue("id"));
+        orderController.deleteOrder(id).statusCodeIs(HttpStatus.SC_OK);
     }
 }

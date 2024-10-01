@@ -1,10 +1,10 @@
 import controller.PetController;
-import io.restassured.response.Response;
-import models.Pet;
-import org.testng.Assert;
+import io.qameta.allure.Description;
+import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 import java.util.List;
-import static utils.Constants.*;
+import static utils.Constants.DEFAULT_PET;
+import static utils.Constants.UPDATED_PET;
 import static utils.FileConfig.getPathToResourceFile;
 
 public class PetSmokeTests extends BaseTest {
@@ -12,87 +12,111 @@ public class PetSmokeTests extends BaseTest {
     PetController petController = new PetController();
 
     @Test
-    public void createPetTestGena() {
-        Response response = petController.addDefaultPet();
-        response.prettyPrint();
-        Assert.assertEquals(response.statusCode(), SUCCESS_STATUS_CODE);
+    @Description("Create Pet Test")
+    public void createPetTest() {
+        petController.addDefaultPet()
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("id", String.valueOf(DEFAULT_PET.getId()))
+                .jsonValueIs("name", String.valueOf(DEFAULT_PET.getName()))
+                .jsonValueIs("status", DEFAULT_PET.getStatus())
+                .jsonValueIs("category.id", String.valueOf(DEFAULT_PET.getCategory().getId()))
+                .jsonValueIs("category.name", DEFAULT_PET.getCategory().getName())
+                .jsonValueIs("photoUrls[0]", DEFAULT_PET.getPhotoUrls().getFirst())
+                .jsonValueIs("tags[0].id", String.valueOf(DEFAULT_PET.getTags().getFirst().getId()))
+                .jsonValueIs("tags[0].name", DEFAULT_PET.getTags().getFirst().getName());
     }
 
     @Test
-    public void getExistingPetTestGena() {
-        Response addResponse = petController.addDefaultPet();
-        Pet addedPet = addResponse.as(Pet.class);
+    @Description("Get Existing Pet Test")
+    public void getExistingPetTest() {
 
-        Response getResponse = petController.findPet(addedPet.getId());
-        Pet getPet = getResponse.as(Pet.class);
-
-        getResponse.prettyPrint();
-        Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
-        Assert.assertEquals(addedPet, getPet);
+        var addResponse = petController.addDefaultPet().statusCodeIs(HttpStatus.SC_OK);
+        int id = Integer.parseInt(addResponse.getJsonValue("id"));
+        petController.findPet(id).statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("id", String.valueOf(DEFAULT_PET.getId()))
+                .jsonValueIs("name", String.valueOf(DEFAULT_PET.getName()))
+                .jsonValueIs("status", DEFAULT_PET.getStatus())
+                .jsonValueIs("category.id", String.valueOf(DEFAULT_PET.getCategory().getId()))
+                .jsonValueIs("category.name", DEFAULT_PET.getCategory().getName())
+                .jsonValueIs("photoUrls[0]", DEFAULT_PET.getPhotoUrls().getFirst())
+                .jsonValueIs("tags[0].id", String.valueOf(DEFAULT_PET.getTags().getFirst().getId()))
+                .jsonValueIs("tags[0].name", DEFAULT_PET.getTags().getFirst().getName());
     }
 
     @Test
+    @Description("Get Pet By Status Test")
     public void getPetsByStatusTest() {
-        Response getResponse = petController.findByStatusPet("sold");
-        List<Pet> getPetList = getResponse.jsonPath().getList("", Pet.class);
+        var getResponse = petController.findByStatusPet("sold")
+                .statusCodeIs(HttpStatus.SC_OK);
+
+        List<String> petIds = getResponse.getResponse().extract().jsonPath().getList("id");
 
         String expectedStatus = "sold";
-        for (Pet pet : getPetList) {
-            Assert.assertEquals(pet.getStatus(), expectedStatus);
+
+        for (int i = 0; i < petIds.size(); i++) {
+            getResponse.jsonValueIs("[" + i + "].status", expectedStatus);
         }
-        Assert.assertEquals(getResponse.statusCode(), SUCCESS_STATUS_CODE);
     }
 
+
     @Test
+    @Description("Delete Existing Pet Test")
     public void deleteExistingPetTest() {
-        Response addResponse = petController.addDefaultPet();
-        addResponse.prettyPrint();
-        Pet addedPet = addResponse.as(Pet.class);
-        Response deleteResponse = petController.deletePet(addedPet.getId());
-        deleteResponse.prettyPrint();
-        Assert.assertEquals(deleteResponse.statusCode(), SUCCESS_STATUS_CODE);
+        int id = Integer.parseInt(
+                petController.addDefaultPet()
+                        .statusCodeIs(HttpStatus.SC_OK)
+                        .getJsonValue("id"));
+        petController.deletePet(id).statusCodeIs(HttpStatus.SC_OK);
     }
 
     @Test
+    @Description("Update Existing Pet Test")
     public void updateExistingPetTest() {
-        Response addResponse = petController.addDefaultPet();
-        addResponse.prettyPrint();
+        petController.addDefaultPet().statusCodeIs(HttpStatus.SC_OK);
 
-        Response updatedPetResponse = petController.updatePet();
-        Pet updatedPet = updatedPetResponse.as(Pet.class);
-        updatedPetResponse.prettyPrint();
-
-        Assert.assertEquals(updatedPetResponse.statusCode(), SUCCESS_STATUS_CODE);
-        Assert.assertEquals(UPDATED_PET, updatedPet);
+        petController.updatePet()
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("id", String.valueOf(UPDATED_PET.getId()))
+                .jsonValueIs("name", UPDATED_PET.getName())
+                .jsonValueIs("status", UPDATED_PET.getStatus())
+                .jsonValueIs("category.id", String.valueOf(UPDATED_PET.getCategory().getId()))
+                .jsonValueIs("category.name", UPDATED_PET.getCategory().getName())
+                .jsonValueIs("photoUrls[0]", UPDATED_PET.getPhotoUrls().getFirst())
+                .jsonValueIs("tags[0].id", String.valueOf(UPDATED_PET.getTags().getFirst().getId()))
+                .jsonValueIs("tags[0].name", UPDATED_PET.getTags().getFirst().getName());
     }
 
+
     @Test
+    @Description("Update Existing Pet With Form Data Test")
     public void updateExistingPetFormDataTest() {
-        Response addResponse = petController.addDefaultPet();
-        Pet addedPet = addResponse.as(Pet.class);
+        long id = Long.parseLong(
+                petController.addDefaultPet()
+                        .statusCodeIs(HttpStatus.SC_OK)
+                        .getJsonValue("id")
+        );
 
-        Response updatedPetResponse = petController.updatePetByIdFormData(addedPet.getId());
-        Response getResponse = petController.findPet(addedPet.getId());
+        petController.updatePetByIdFormData(id)
+                .statusCodeIs(HttpStatus.SC_OK);
 
-        Pet updatedPet = getResponse.as(Pet.class);
-        Assert.assertEquals(updatedPetResponse.statusCode(), SUCCESS_STATUS_CODE);
-        Assert.assertEquals(updatedPet.getName(), UPDATED_PET.getName());
-        Assert.assertEquals(updatedPet.getStatus(), UPDATED_PET.getStatus());
+        petController.findPet(id)
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueIs("id", String.valueOf(UPDATED_PET.getId()))
+                .jsonValueIs("name", UPDATED_PET.getName())
+                .jsonValueIs("status", UPDATED_PET.getStatus());
     }
 
     @Test
+    @Description("Update Existing Pet With Image File Test")
     public void updatePetUploadFileTest() {
-        Response addResponse = petController.addDefaultPet();
-        Pet addedPet = addResponse.as(Pet.class);
-        addResponse.prettyPrint();
+        long id = Long.parseLong(
+                petController.addDefaultPet()
+                        .statusCodeIs(HttpStatus.SC_OK)
+                        .getJsonValue("id")
+        );
 
-        Response updatedPetResponse = petController.updatePetUploadImage(addedPet.getId(), getPathToResourceFile("cat.jpeg"));
-        updatedPetResponse.prettyPrint();
-
-        Response getResponse = petController.findPet(addedPet.getId());
-        Pet updatedPet = getResponse.as(Pet.class);
-        getResponse.prettyPrint();
-
-        Assert.assertEquals(updatedPetResponse.statusCode(), SUCCESS_STATUS_CODE);
+        petController.updatePetUploadImage(id, getPathToResourceFile("cat.jpeg"))
+                .statusCodeIs(HttpStatus.SC_OK)
+                .jsonValueContains("message", "File uploaded to ./cat.jpeg");
     }
 }

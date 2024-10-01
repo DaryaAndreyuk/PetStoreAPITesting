@@ -3,14 +3,14 @@ package models;
 import java.util.Objects;
 
 public class Category {
-    private Integer id;
+    private long id;
     private String name;
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -22,7 +22,7 @@ public class Category {
         this.name = name;
     }
 
-    public Category(Integer id, String name) {
+    public Category(long id, String name) {
         this.id = id;
         this.name = name;
     }
