@@ -32,7 +32,7 @@ After running the tests, you can view the Allure reports by executing:
 
 ## Example of Allure Report
 
-
+<img src="images/AllureExample.png" alt="AllureReportExample" />
 
 That's it! You've successfully run the tests.
 

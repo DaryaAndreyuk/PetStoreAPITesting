@@ -1,5 +1,8 @@
 import controller.PetController;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 import java.util.List;
@@ -12,6 +15,9 @@ public class PetSmokeTests extends BaseTest {
     PetController petController = new PetController();
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Create a valid pet")
+    @Feature("API: Create pet")
     @Description("Create Pet Test")
     public void createPetTest() {
         petController.addDefaultPet()
@@ -27,7 +33,10 @@ public class PetSmokeTests extends BaseTest {
     }
 
     @Test
-    @Description("Get Existing Pet Test")
+    @Owner("Darya Andreyuk")
+    @Epic("Find existing pet by ID")
+    @Feature("API: Find pet")
+    @Description("Get Existing Pet by ID Test")
     public void getExistingPetTest() {
 
         var addResponse = petController.addDefaultPet().statusCodeIs(HttpStatus.SC_OK);
@@ -44,7 +53,10 @@ public class PetSmokeTests extends BaseTest {
     }
 
     @Test
-    @Description("Get Pet By Status Test")
+    @Owner("Darya Andreyuk")
+    @Epic("Find pets by status")
+    @Feature("API: Find pets by status")
+    @Description("Get Pets By Status Test")
     public void getPetsByStatusTest() {
         var getResponse = petController.findByStatusPet("sold")
                 .statusCodeIs(HttpStatus.SC_OK);
@@ -60,6 +72,9 @@ public class PetSmokeTests extends BaseTest {
 
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Delete existing pet")
+    @Feature("API: delete existing pet")
     @Description("Delete Existing Pet Test")
     public void deleteExistingPetTest() {
         int id = Integer.parseInt(
@@ -70,6 +85,9 @@ public class PetSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Update existing pet")
+    @Feature("API: Update pet")
     @Description("Update Existing Pet Test")
     public void updateExistingPetTest() {
         petController.addDefaultPet().statusCodeIs(HttpStatus.SC_OK);
@@ -88,6 +106,9 @@ public class PetSmokeTests extends BaseTest {
 
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Update existing pet with form data (name, status)")
+    @Feature("API: Update existing pet with form data (name, status)")
     @Description("Update Existing Pet With Form Data Test")
     public void updateExistingPetFormDataTest() {
         long id = Long.parseLong(
@@ -107,6 +128,9 @@ public class PetSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Update existing pet by uploading image file")
+    @Feature("API: existing pet by uploading image file")
     @Description("Update Existing Pet With Image File Test")
     public void updatePetUploadFileTest() {
         long id = Long.parseLong(

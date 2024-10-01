@@ -18,7 +18,7 @@ public class OrderSmokeTests extends BaseTest {
 
     @Test
     @Owner("Darya Andreyuk")
-    @Epic("Create order")
+    @Epic("Create a valid order")
     @Feature("API: Create order")
     @Description("Add order test with default order")
     public void createOrderTest() {
@@ -29,7 +29,7 @@ public class OrderSmokeTests extends BaseTest {
 
     @Test
     @Owner("Darya Andreyuk")
-    @Epic("Get order")
+    @Epic("Find existing order")
     @Feature("API: Get order")
     @Description("Get existing order test")
     public void getExistingOrderTest() {
@@ -55,6 +55,9 @@ public class OrderSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Delete Order By ID")
+    @Feature("API: Delete order")
     @Description("Delete order by ID test")
     public void deleteOrderByIdTest() {
         int id = Integer.parseInt(
