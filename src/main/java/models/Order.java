@@ -1,7 +1,13 @@
 package models;
 
+import lombok.Getter;
+import lombok.Setter;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+@Setter
+@Getter
 public class Order {
 
     private Integer id;
@@ -24,54 +30,6 @@ public class Order {
         this.complete = complete;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getPetId() {
-        return petId;
-    }
-
-    public void setPetId(Integer petId) {
-        this.petId = petId;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getShipDate() {
-        return shipDate;
-    }
-
-    public void setShipDate(String shipDate) {
-        this.shipDate = shipDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Boolean getComplete() {
-        return complete;
-    }
-
-    public void setComplete(Boolean complete) {
-        this.complete = complete;
-    }
-
     @Override
     public int hashCode() {
         int result = 1;
@@ -86,19 +44,44 @@ public class Order {
 
     @Override
     public boolean equals(Object other) {
-        if (other == this) {
+        if (this == other) {
             return true;
         }
         if (!(other instanceof Order)) {
             return false;
         }
-        Order rhs = ((Order) other);
-        return ((((((Objects.equals(this.petId, rhs.petId)) &&
-                (Objects.equals(this.quantity, rhs.quantity))) &&
-                (Objects.equals(this.id, rhs.id))) &&
-                (Objects.equals(this.shipDate, rhs.shipDate))) &&
-                (Objects.equals(this.complete, rhs.complete))) &&
-                (Objects.equals(this.status, rhs.status)));
+        Order rhs = (Order) other;
+
+        ZonedDateTime thisShipDate = parseDate(this.shipDate);
+        ZonedDateTime rhsShipDate = parseDate(rhs.shipDate);
+
+        return Objects.equals(this.petId, rhs.petId) &&
+                Objects.equals(this.quantity, rhs.quantity) &&
+                Objects.equals(this.id, rhs.id) &&
+                Objects.equals(thisShipDate, rhsShipDate) &&
+                Objects.equals(this.complete, rhs.complete) &&
+                Objects.equals(this.status, rhs.status);
     }
 
+    public static ZonedDateTime parseDate(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        try {
+            return ZonedDateTime.parse(dateString, formatter);
+        } catch (Exception e) {
+            System.err.println("Failed to parse date: " + dateString);
+            return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Order {" +
+                "id = " + id +
+                ", petId = " + petId +
+                ", quantity = " + quantity +
+                ", shipDate = '" + shipDate + '\'' +
+                ", status = '" + status + '\'' +
+                ", complete = " + complete +
+                '}';
+    }
 }

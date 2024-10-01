@@ -2,9 +2,7 @@ import controller.PetController;
 import io.qameta.allure.Description;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
-
 import java.util.List;
-
 import static utils.Constants.DEFAULT_PET;
 import static utils.Constants.UPDATED_PET;
 import static utils.FileConfig.getPathToResourceFile;
@@ -108,7 +106,6 @@ public class PetSmokeTests extends BaseTest {
                 .jsonValueIs("status", UPDATED_PET.getStatus());
     }
 
-
     @Test
     @Description("Update Existing Pet With Image File Test")
     public void updatePetUploadFileTest() {
@@ -120,6 +117,6 @@ public class PetSmokeTests extends BaseTest {
 
         petController.updatePetUploadImage(id, getPathToResourceFile("cat.jpeg"))
                 .statusCodeIs(HttpStatus.SC_OK)
-                .getJsonValue("message").contains("File uploaded to ./cat.jpeg");
+                .jsonValueContains("message", "File uploaded to ./cat.jpeg");
     }
 }

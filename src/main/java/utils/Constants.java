@@ -9,7 +9,7 @@ public final class Constants {
     public static final String BASE_URL = "https://petstore.swagger.io/v2";
     public static final String CONTENT_TYPE_HEADER = "Content-Type";
 
-    public static final int NON_EXIST_ID_INT = 99999999;
+    public static final int NON_EXIST_ID = 99999999;
 
     public static final Category DEFAULT_CATEGORY = new Category(2, "Dogs");
     public static final Category UPDATED_CATEGORY = new Category(5, "Dogs with puppies");

@@ -1,12 +1,12 @@
 import controller.OrderController;
 import io.qameta.allure.Description;
 import io.qameta.allure.testng.AllureTestNg;
+import models.Order;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import static utils.Constants.DEFAULT_ORDER;
-import static utils.Constants.NON_EXIST_ID_INT;
+import static utils.Constants.*;
 
 @Listeners({AllureTestNg.class})
 public class OrderSmokeTests extends BaseTest {
@@ -18,12 +18,7 @@ public class OrderSmokeTests extends BaseTest {
     public void createOrderTest() {
         orderController.addDefaultOrder()
                 .statusCodeIs(HttpStatus.SC_OK)
-                .jsonValueIsNotNull("shipDate")
-                .jsonValueIs("id", String.valueOf(DEFAULT_ORDER.getId()))
-                .jsonValueIs("petId", String.valueOf(DEFAULT_ORDER.getPetId()))
-                .jsonValueIs("quantity", String.valueOf(DEFAULT_ORDER.getQuantity()))
-                .jsonValueIs("status", DEFAULT_ORDER.getStatus())
-                .jsonValueIs("complete", String.valueOf(DEFAULT_ORDER.getComplete()));
+                .compareWithObject(DEFAULT_ORDER, Order.class);
     }
 
     @Test
@@ -44,7 +39,7 @@ public class OrderSmokeTests extends BaseTest {
     @Test
     @Description("Get non existing order test")
     public void getNonExistingOrderTest() {
-        orderController.findOrder(NON_EXIST_ID_INT).statusCodeIs(HttpStatus.SC_NOT_FOUND);
+        orderController.findOrder(NON_EXIST_ID).statusCodeIs(HttpStatus.SC_NOT_FOUND);
     }
 
     @Test

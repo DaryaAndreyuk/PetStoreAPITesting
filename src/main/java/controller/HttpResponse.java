@@ -19,7 +19,7 @@ public class HttpResponse {
         return this;
     }
 
-    @Step("Check json value")
+    @Step("Check JSON value")
     public HttpResponse jsonValueIs(String path, String expectedValue) {
         String actualValue = this.response.extract().jsonPath().getString(path);
         Assertions.assertThat(actualValue)
@@ -29,7 +29,7 @@ public class HttpResponse {
         return this;
     }
 
-    @Step("Check json value is not null")
+    @Step("Check JSON value is not null")
     public HttpResponse jsonValueIsNotNull(String path) {
         String actualValue = this.response.extract().jsonPath().getString(path);
         Assertions.assertThat(actualValue)
@@ -38,7 +38,7 @@ public class HttpResponse {
         return this;
     }
 
-    @Step("Check json value is null")
+    @Step("Check JSON value is null")
     public HttpResponse jsonValueIsNull(String path) {
         String actualValue = this.response.extract().jsonPath().getString(path);
         Assertions.assertThat(actualValue)
@@ -46,7 +46,6 @@ public class HttpResponse {
                 .isNull();
         return this;
     }
-
 
     public String getJsonValue(String path) {
         String value = this.response.extract().jsonPath().getString(path);
@@ -57,5 +56,27 @@ public class HttpResponse {
     @Override
     public String toString() {
         return String.format("Status code: %s and response: \n%s", response.extract().response().statusCode(), response.extract().response().asPrettyString());
+    }
+
+    @Step("Compare JSON response with expected object")
+    public <T> HttpResponse compareWithObject(T expectedObject, Class<T> objectType) {
+        T actualObject = this.response.extract().as(objectType);
+
+        Assertions.assertThat(actualObject)
+                .as("Actual object does not match expected object.\nActual: %s\nExpected: %s",
+                        actualObject, expectedObject)
+                .isEqualTo(expectedObject);
+
+        return this;
+    }
+
+    @Step("Check if JSON value contains")
+    public HttpResponse jsonValueContains(String path, String expectedSubstring) {
+        String actualValue = this.response.extract().jsonPath().getString(path);
+        Assertions.assertThat(actualValue)
+                .as("Expected value to contain '%s', but got '%s' for the path '%s'. Full response:\n%s",
+                        expectedSubstring, actualValue, path, this.response.extract().response().asPrettyString())
+                .contains(expectedSubstring);
+        return this;
     }
 }
