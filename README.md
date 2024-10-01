@@ -1,8 +1,15 @@
 # Pet Store API Automation Testing
 
-This project consists of automated tests for the API provided by: [Swagger Pet Store](https://petstore.swagger.io/#/).
+## Portfolio project on automation of test scripts using API tests for [Swagger Pet Store](https://petstore.swagger.io/#/)
 
-## Prerequisites
+## Contents:
+- Technology stack used
+- Running tests from the terminal
+- Allure report example
+
+## Technology stack used
+
+
 
 To run this project, you need:
 
