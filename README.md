@@ -4,8 +4,8 @@
 
 ## Contents:
 - [Technology stack used](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#technology-stack-used)
-- Running the Tests from the terminal
-- Viewing Allure Reports
+- [Running the Tests from the terminal](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#running-the-tests)
+- [Viewing Allure Reports](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#viewing-allure-reports)
 
 ## Technology stack used
 
@@ -37,7 +37,5 @@ After running the tests, you can view the Allure reports by executing:
 ## Report with test results
 
 <img src="images/Allure-ReportExample.png" alt="AllureReportExample1" />
-
-That's it! You've successfully run the tests.
 
 If you have any comments or suggestions, please feel free to contact me at: [dasha.andreyuk@gmail.com](dasha.andreyuk@gmail.com)
