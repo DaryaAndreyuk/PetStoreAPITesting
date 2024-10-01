@@ -1,1 +1,1 @@
-# PetStoreAPITesting
+# Pet Store API Automation Testing
