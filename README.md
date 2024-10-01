@@ -9,7 +9,7 @@
 
 ## Technology stack used
 
-
+![IDEA](images/Intelij_IDEA.png)
 
 To run this project, you need:
 
