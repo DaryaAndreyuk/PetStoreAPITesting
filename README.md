@@ -9,21 +9,12 @@
 
 ## Technology stack used
 
-<img src="images/Intelij_IDEA.svg" alt="IDEA" width="200"/>
-<img src="images/Allure_Report.svg" alt="Allure_Report" width="200"/>
-<img src="images/Gradle.svg" alt="Gradle" width="200"/>
-<img src="images/Java.svg" alt="Java" width="200"/>
-<img src="images/RestAssured.svg" alt="RestAssured" width="200"/>
-<img src="images/testng.png" alt="testng" width="200"/>
-
-![IDEA](images/Intelij_IDEA.svg)
-![Allure_Report](images/Allure_Report.svg)
-![Gradle](images/Gradle.svg)
-![Java](images/Java.svg)
-![RestAssured](images/RestAssured.svg)
-![testng](images/testng.png)
-
-
+<img src="images/Intelij_IDEA.svg" alt="IDEA" width="40" height="40"/>
+<img src="images/Allure_Report.svg" alt="Allure_Report" width="40" height="40"/>
+<img src="images/Gradle.svg" alt="Gradle" width="40" height="40"/>
+<img src="images/Java.svg" alt="Java" width="40" height="40"/>
+<img src="images/RestAssured.svg" alt="RestAssured" width="40" height="40"/>
+<img src="images/testng.png" alt="testng" width="40" height="40"/>
 
 To run this project, you need:
 
