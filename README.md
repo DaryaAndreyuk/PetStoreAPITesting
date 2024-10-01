@@ -34,6 +34,10 @@ After running the tests, you can view the Allure reports by executing:
 
 <img src="images/AllureExample.png" alt="AllureReportExample" />
 
+## Report with test results
+
+<img src="images/Allure-ReportExample.png" alt="AllureReportExample1" />
+
 That's it! You've successfully run the tests.
 
 If you have any comments or suggestions, please feel free to contact me at: [dasha.andreyuk@gmail.com](dasha.andreyuk@gmail.com)
