@@ -1,5 +1,8 @@
 import controller.UserController;
 import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 import static utils.Constants.*;
@@ -8,6 +11,9 @@ public class UserSmokeTests extends BaseTest {
     UserController userController = new UserController();
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Create a valid user")
+    @Feature("API: Create a valid user")
     @Description("Create User Test")
     public void createUserTest() {
         userController.addDefaultUser()
@@ -16,6 +22,9 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Create multiple users with an array of default users")
+    @Feature("API: Create multiple users with an array of default users")
     @Description("Create Users With Array Of Default Users Test")
     public void createUsersWithArrayTest() {
         userController.addDefaultUsersWithArray()
@@ -23,6 +32,9 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Log Out User")
+    @Feature("API: Log Out User")
     @Description("Log Out User Test")
     public void logoutUserTest() {
         userController.logoutUser()
@@ -31,12 +43,18 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
-    @Description("Log In User Test")
+    @Owner("Darya Andreyuk")
+    @Epic("Log In Existing User")
+    @Feature("API: Log In Existing User")
+    @Description("Log In Existing User Test")
     public void validUserLoginTest() {
         userController.validUserLogin().statusCodeIs(HttpStatus.SC_OK);
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Delete Existing User")
+    @Feature("API: Delete Existing User")
     @Description("Delete Existing User Test")
     public void deleteExistingUserTest() {
         userController.addDefaultUser().statusCodeIs(HttpStatus.SC_OK);
@@ -47,6 +65,9 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Update Existing User")
+    @Feature("API: Update Existing User")
     @Description("Update Existing User Test")
     public void updateExistingUserTest() {
         userController.addDefaultUser()
@@ -70,6 +91,9 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Get User By Valid Username")
+    @Feature("API: Get User By Valid Username")
     @Description("Get User By Valid Username Test")
     public void getUserByValidUsernameTest() {
         userController.addDefaultUser()
@@ -90,6 +114,9 @@ public class UserSmokeTests extends BaseTest {
     }
 
     @Test
+    @Owner("Darya Andreyuk")
+    @Epic("Get Existing User")
+    @Feature("API: Get Existing User")
     @Description("Get Existing User Test")
     public void getExistingUserTest() {
         userController.addDefaultUser()
