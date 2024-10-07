@@ -23,7 +23,7 @@
 
 </p>
 
-In this project, automated tests are written in `Java` using the `Rest-Assured` framework for API testing.
+In this project, automated tests are written in `Java 21` using the `Rest-Assured` framework for API testing.
 
 - `Gradle` is used as the build tool.
 - `TestNG` is the testing framework.
