@@ -4,10 +4,10 @@
 
 ## Contents:
 
-- [Technology stack used](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#technology-stack-used)
-- [Running the Tests from the terminal](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#running-the-tests)
-- [Viewing Allure Reports](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#viewing-allure-reports)
-- [Build with Jenkins](https://github.com/DaryaAndreyuk/PetStoreAPITesting/tree/fb_DaryaAndreyuk_8_AddReadMe?tab=readme-ov-file#build-with-jenkins)
+- [Technology stack used](https://github.com/DaryaAndreyuk/PetStoreAPITesting?tab=readme-ov-file#technology-stack-used)
+- [Running the Tests from the terminal](https://github.com/DaryaAndreyuk/PetStoreAPITesting?tab=readme-ov-file#running-the-tests)
+- [Viewing Allure Reports](https://github.com/DaryaAndreyuk/PetStoreAPITesting?tab=readme-ov-file#running-the-tests)
+- [Build with Jenkins](https://github.com/DaryaAndreyuk/PetStoreAPITesting?tab=readme-ov-file#build-with-jenkins)
 
 ## Technology stack used
 
