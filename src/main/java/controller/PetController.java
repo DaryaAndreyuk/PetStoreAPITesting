@@ -68,8 +68,6 @@ public class PetController {
                 .then());
     }
 
-
-
     @Step("Update pet by ID: {petId} with some image: {filePath}")
     public HttpResponse updatePetUploadImage(long petId, String filePath) {
         File imageFile = new File(filePath);
